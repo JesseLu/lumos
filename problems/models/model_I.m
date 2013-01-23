@@ -12,6 +12,7 @@ function [mode] = model_I(omega, in, out)
     eps_hi = 13;
     z_center = dims(3)/2;
     z_thickness = 220 / 40;
+    border = 13;
 
     mu = {ones(dims), ones(dims), ones(dims)};
     [s_prim, s_dual] = stretched_coordinates(omega, dims, [10 10 10]);
@@ -23,11 +24,12 @@ function [mode] = model_I(omega, in, out)
                         'size', [1e9 1e9], ...
                         'permittivity', eps_lo);
 
-    [wg{1}, ports{1}] = wg_lores(epsilon, 'single', 'x+', dims(1), ... 
-                                    [dims(1)/2 0 z_center]);
+    left_pos = [border-1, dims(2)/2, z_center];
+    right_pos = [dims(1)-border+2, dims(2)/2, z_center];
 
-    [wg{2}, ports{2}] = wg_lores(epsilon, 'single', 'x-', dims(1), ... 
-                                    [-dims(1)/2 0 z_center]);
+    [wg{1}, ports{1}] = wg_lores(epsilon, 'single', 'x+', 2*border, left_pos);
+
+    [wg{2}, ports{2}] = wg_lores(epsilon, 'single', 'x-', 2*border, right_pos);
 
     epsilon = add_planar(epsilon, z_center, z_thickness, {background, wg{:}});
  
@@ -35,7 +37,6 @@ function [mode] = model_I(omega, in, out)
     %% Build the selection matrix
     % Appropriate values of epsilon must be reset.
     reset_eps_val = eps_hi;
-    border = 13;
     [S, epsilon] = planar_selection_matrix('alternate', epsilon, ...
                                     {border + [1 1], dims(1:2) - border}, ...
                                     reset_eps_val, z_center, z_thickness);

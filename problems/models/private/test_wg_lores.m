@@ -26,7 +26,7 @@ function test_wg_lores(type, mode_num)
                         'permittivity', eps_lo);
 
     [wg{1}, ports{1}] = wg_lores(epsilon, type, 'x+', 1e9, ... 
-                                    [dims(1)/2 0 z_center]);
+                                    [dims(1)/2 dims(2)/2 z_center]);
 
 
     epsilon = add_planar(epsilon, z_center, z_thickness, {background, wg{:}});

@@ -10,10 +10,24 @@ function [wg] = build_io(ports, io)
 
         % NOTE: Distinguish input and output by the number of elements
         % in the power field of io.
+        switch length(io{k}.power)
+            case 1 % Input
+                shift = port.J_shift;
+            case 2 % Output
+                shift = port.E_shift;
+            otherwise
+                error('Invalid power.');
+        end
+        
+        % Shift things appropriately.
+        for l = 1 : 2
+            pos{l} = port.pos{l} + shift;
+        end
 
-        wg(k) = struct('type', port.type, ...
+        % Build the waveguide spec.
+        wg(k) = struct( 'type', port.type, ...
                         'power', io{k}.power, ...
-                        'pos', {port{k}.pos}, ...
-                        'dir', port{k}.dir, ...
-                        'mode_num', port{k}.(io{k}.mode));
+                        'pos', {pos}, ...
+                        'dir', port.dir, ...
+                        'mode_num', port.(io{k}.mode));
     end

@@ -1,5 +1,5 @@
 
-function [epsilon] = wgconv(omega)
+function [opt_prob, J, E_out] = wgconv(omega)
 
     modes(1) = model_I(omega, io(1, 'te0', 1), ...
                             {io(2, 'te0', [0.9 1])});

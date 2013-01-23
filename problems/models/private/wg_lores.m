@@ -26,40 +26,64 @@ function [waveguide, port] = wg_lores(epsilon, type, dir, len, pos)
 
     wg_eps = 13;
 
-    port = struct(  'type', 'wgmode');
+    port.type = 'wgmode';
+    port.dir = dir;
 
     switch type
-        case 'single'
-        % Contains a single TE and TM mode.
+        case 'single' % Contains a single TE and TM mode.
             width = 500 / grid_spacing;
+            
+            % Mode numbers.
+            port.te0 = 1;
+            port.tm0 = 2;
 
-        case 'double'
-        % Contains up to first-order TE and TM modes.
+        case 'double' % Contains up to first-order TE and TM modes.
             width = 750 / grid_spacing;
+
+            % Mode numbers.
+            port.te0 = 1;
+            port.tm0 = 2;
+            port.te1 = 3;
+            port.tm1 = 4;
 
         otherwise
             error('Unkown type.');
     end
 
+    port.pos = {pos - 19, pos + 20}; % Assumes 40x40 area...
     switch dir(1)
         case 'x'
             wg_size = [len width];
+            ind = 1;
         case 'y'
+            ind = 2;
             wg_size = [width len];
         otherwise
             error('Unknown direction.');
     end
+    port.pos{1}(ind) = pos(ind);
+    port.pos{2}(ind) = pos(ind);
 
+    % This is so that we are "centered" on the position given.
+    % Centered means that E and J are in the correct positions and 
+    % only use up +/- one plane from the position given.
+    port.J_shift = zeros(1, 3);
+    port.E_shift = zeros(1, 3);
     switch dir(2)
         case '+'
+            port.J_shift(ind) = 0;
+            port.E_shift(ind) = -1;
         case '-'
+            % This looks weird, but it's because the waveguide mode solver
+            % always adds one forward to compute a unidirectional mode.
+            port.J_shift(ind) = -1;
+            port.E_shift(ind) = +1;
         otherwise
             error('Unknown direction.');
     end
 
-
-
+    center = size(epsilon{1})/2;
     waveguide = struct( 'type', 'rectangle', ...
-                        'position', pos(1:2), ...
+                        'position', pos(1:2) - center(1:2), ...
                         'size', wg_size, ...
                         'permittivity', wg_eps);
