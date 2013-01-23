@@ -1,7 +1,7 @@
 %% model_I
 % One port on the left and one port on the right.
 
-function [epsilon] = model_I(omega)
+function [mode] = model_I(omega, in, out)
 
 %% Output parameters
 % Fills in everything for mode structures, except for the in and out fields.
@@ -14,23 +14,26 @@ function [epsilon] = model_I(omega)
     z_thickness = 220 / 40;
 
     mu = {ones(dims), ones(dims), ones(dims)};
-    epsilon = {eps_lo*ones(dims), eps_lo*ones(dims), eps_lo*ones(dims)};
     [s_prim, s_dual] = stretched_coordinates(omega, dims, [10 10 10]);
 
+    %% Construct structure
+    epsilon = {eps_lo*ones(dims), eps_lo*ones(dims), eps_lo*ones(dims)};
     background = struct('type', 'rectangle', ...
                         'position', [0 0], ...
                         'size', [1e9 1e9], ...
                         'permittivity', eps_lo);
 
-    [wg{1}, port{1}] = wg_lores(epsilon, 'single', 'x+', dims(1), ... 
+    [wg{1}, ports{1}] = wg_lores(epsilon, 'single', 'x+', dims(1), ... 
                                     [dims(1)/2 0 z_center]);
 
-    [wg{2}, port{2}] = wg_lores(epsilon, 'single', 'x-', dims(1), ... 
+    [wg{2}, ports{2}] = wg_lores(epsilon, 'single', 'x-', dims(1), ... 
                                     [-dims(1)/2 0 z_center]);
 
     epsilon = add_planar(epsilon, z_center, z_thickness, {background, wg{:}});
-    
-    % Build the selection matrix, and reset values of epsilon.
+ 
+
+    %% Build the selection matrix
+    % Appropriate values of epsilon must be reset.
     reset_eps_val = eps_hi;
     border = 13;
     [S, epsilon] = planar_selection_matrix('alternate', epsilon, ...
@@ -38,3 +41,14 @@ function [epsilon] = model_I(omega)
                                     reset_eps_val, z_center, z_thickness);
 
 
+    %% Specify modes
+    mode = struct(  'omega', omega, ...
+                    'in', build_io(ports, in), ...
+                    'out', build_io(ports, out), ...
+                    's_prim', {s_prim}, ...
+                    's_dual', {s_dual}, ...
+                    'mu', {mu}, ...
+                    'epsilon_const', {epsilon}, ...
+                    'S', (eps_hi - eps_lo) * S);
+
+   
