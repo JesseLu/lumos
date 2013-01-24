@@ -50,7 +50,7 @@ function [mode] = model_I(omega, in, out, varargin)
 
     %% Build the selection matrix
     % Appropriate values of epsilon must be reset.
-    reset_eps_val = eps_hi;
+    reset_eps_val = eps_lo;
     [S, epsilon] = planar_selection_matrix('alternate', epsilon, ...
                                     {border + [1 1], dims(1:2) - border}, ...
                                     reset_eps_val, z_center, z_thickness);
