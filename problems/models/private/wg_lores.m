@@ -64,6 +64,7 @@ function [waveguide, port] = wg_lores(epsilon, type, dir, len, pos)
     port.pos{1}(ind) = pos(ind);
     port.pos{2}(ind) = pos(ind);
 
+
     % This is so that we are "centered" on the position given.
     % Centered means that E and J are in the correct positions and 
     % only use up +/- one plane from the position given.
