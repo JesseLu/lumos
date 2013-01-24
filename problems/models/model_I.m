@@ -1,7 +1,7 @@
 %% model_I
 % One port on the left and one port on the right.
 
-function [mode] = model_I(omega, in, out, varargin)
+function [mode, design_areas] = model_I(omega, in, out, varargin)
 
 %% Output parameters
 % Fills in everything for mode structures, except for the in and out fields.
@@ -38,8 +38,8 @@ function [mode] = model_I(omega, in, out, varargin)
                         'size', [1e9 1e9], ...
                         'permittivity', eps_lo);
 
-    left_pos = [border-1, dims(2)/2, z_center];
-    right_pos = [dims(1)-border+2, dims(2)/2, z_center];
+    left_pos = [border-2, dims(2)/2, z_center];
+    right_pos = [dims(1)-border+3, dims(2)/2, z_center];
 
     [wg{1}, ports{1}] = wg_lores(epsilon, 'single', 'x+', 2*border, left_pos);
 
@@ -51,8 +51,10 @@ function [mode] = model_I(omega, in, out, varargin)
     %% Build the selection matrix
     % Appropriate values of epsilon must be reset.
     reset_eps_val = eps_lo;
+    design_pos = {border + [1 1], dims(1:2) - border};
+    design_area = design_pos{2} - design_pos{1} + 1;
     [S, epsilon] = planar_selection_matrix('alternate', epsilon, ...
-                                    {border + [1 1], dims(1:2) - border}, ...
+                                    design_pos, ...
                                     reset_eps_val, z_center, z_thickness);
 
 
@@ -64,6 +66,7 @@ function [mode] = model_I(omega, in, out, varargin)
                     's_dual', {s_dual}, ...
                     'mu', {mu}, ...
                     'epsilon_const', {epsilon}, ...
-                    'S', (eps_hi - eps_lo) * S);
+                    'S', (eps_hi - eps_lo) * S, ...
+                    'design_area', design_area);
 
    
