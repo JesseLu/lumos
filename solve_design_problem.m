@@ -26,7 +26,7 @@ function [vis_result] = solve_design_problem(gen_problem, varargin)
     %% Solve.
 
     %% Optimize
-    p0 = struct_obj.p_range(:,2);
+    p0 = mean(struct_obj.p_range, 2);
     mode_sel = 1 : length(opt_prob.phys_res);
     vis_layer = struct( 'component', 2, ...
                         'slice_dir', 'z', ...
