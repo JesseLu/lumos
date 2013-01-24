@@ -2,14 +2,26 @@
 % Not a bona fide test script as usual,
 % just helps to see which modes are really confined under certain conditions.
 
-function test_wg_lores(type, mode_num)
+function test_wg_lores(type, mode_num, varargin)
 
 %% Output parameters
 % Fills in everything for mode structures, except for the in and out fields.
 % At the same time, make the in and out fields easier to specify.
 
+
+    if strcmp('2D', varargin)
+        flatten = true;
+    else
+        flatten = false;
+    end
+
+    if flatten
+        dims = [40 40 1];
+    else
+        dims = [40 40 40];
+    end
+
     omega = 2 * pi / 40;
-    dims = [60 40 40];
     eps_lo = 2.25;
     eps_hi = 13;
     z_center = dims(3)/2;

@@ -1,13 +1,26 @@
 %% model_I
 % One port on the left and one port on the right.
 
-function [mode] = model_I(omega, in, out)
+function [mode] = model_I(omega, in, out, varargin)
 
 %% Output parameters
 % Fills in everything for mode structures, except for the in and out fields.
 % At the same time, make the in and out fields easier to specify.
 
-    dims = [60 60 40];
+    if strcmp('2D', varargin)
+        flatten = true;
+    else
+        flatten = false;
+    end
+
+    if flatten
+        dims = [60 60 1];
+        pml_thickness = [10 10 0];
+    else
+        dims = [60 60 40];
+        pml_thickness = [10 10 10];
+    end
+
     eps_lo = 2.25;
     eps_hi = 13;
     z_center = dims(3)/2;
@@ -15,7 +28,8 @@ function [mode] = model_I(omega, in, out)
     border = 13;
 
     mu = {ones(dims), ones(dims), ones(dims)};
-    [s_prim, s_dual] = stretched_coordinates(omega, dims, [10 10 10]);
+    [s_prim, s_dual] = stretched_coordinates(omega, dims, pml_thickness);
+
 
     %% Construct structure
     epsilon = {eps_lo*ones(dims), eps_lo*ones(dims), eps_lo*ones(dims)};

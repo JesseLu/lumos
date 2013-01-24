@@ -16,6 +16,14 @@
 
 function [waveguide, port] = wg_lores(epsilon, type, dir, len, pos)
 
+    if length(size(squeeze(epsilon{1}))) == 2
+        flatten = true;
+        dims = [size(squeeze(epsilon{1})), 1];
+    else 
+        flatten = false;
+        dims = size(epsilon{1});
+    end
+    
     % If a free-space wavelength is 40 grid points, 
     % and we want that to correspond to 1600 nm,
     % then the grid spacing is 40 nm.
@@ -34,17 +42,29 @@ function [waveguide, port] = wg_lores(epsilon, type, dir, len, pos)
             width = 500 / grid_spacing;
             
             % Mode numbers.
-            port.te0 = 1;
-            port.tm0 = 2;
+            if flatten
+                port.te0 = 2;
+                port.tm0 = 1;
+            else
+                port.te0 = 1;
+                port.tm0 = 2;
+            end
 
         case 'double' % Contains up to first-order TE and TM modes.
             width = 750 / grid_spacing;
 
             % Mode numbers.
-            port.te0 = 1;
-            port.tm0 = 2;
-            port.te1 = 3;
-            port.tm1 = 4;
+            if flatten
+                port.te0 = 2;
+                port.tm0 = 1;
+                port.te1 = 4;
+                port.tm1 = 3;
+            else
+                port.te0 = 1;
+                port.tm0 = 2;
+                port.te1 = 3;
+                port.tm1 = 4;
+            end
 
         otherwise
             error('Unkown type.');
@@ -63,6 +83,12 @@ function [waveguide, port] = wg_lores(epsilon, type, dir, len, pos)
     end
     port.pos{1}(ind) = pos(ind);
     port.pos{2}(ind) = pos(ind);
+
+    % Make sure we haven't exceeded the limits of the space.
+    for k = 1 : length(port.pos)
+        port.pos{k} = (port.pos{k} < 1) * 1 + (port.pos{k} > dims) .* dims + ...
+                    ((port.pos{k} >= 1) & (port.pos{k} <= dims)) .* port.pos{k};
+    end
 
 
     % This is so that we are "centered" on the position given.
