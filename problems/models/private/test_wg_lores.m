@@ -23,7 +23,7 @@ function test_wg_lores(type, mode_num, varargin)
 
     omega = 2 * pi / 40;
     eps_lo = 2.25;
-    eps_hi = 13;
+    eps_hi = 12.25;
     z_center = dims(3)/2;
     z_thickness = 250 / 40;
 

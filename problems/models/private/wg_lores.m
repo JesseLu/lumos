@@ -11,7 +11,7 @@
 % For good performance, meaning minimal mode overap,
 % the waveguide should reside in its own 40x40 box of SiO2.
 %
-% Assumes that the permittivity of silicon is 13,
+% Assumes that the permittivity of silicon is 12.25,
 % and that the cladding is SiO2 with a permittivity of 2.25.
 
 function [waveguide, port] = wg_lores(epsilon, type, dir, len, pos)
@@ -32,7 +32,7 @@ function [waveguide, port] = wg_lores(epsilon, type, dir, len, pos)
     % We assume a slab thickness of 250 nm.
     slab_thickness = 250 / grid_spacing;
 
-    wg_eps = 13;
+    wg_eps = 12.25;
 
     port.type = 'wgmode';
     port.dir = dir;
