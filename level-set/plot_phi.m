@@ -1,4 +1,4 @@
-function plot_level_set(phi, p_lims, varargin)
+function plot_level_set(phi, p_lims)
 % LSET_PLOT(PHI)
 % 
 % Description
@@ -6,11 +6,7 @@ function plot_level_set(phi, p_lims, varargin)
 %     light regions are considered "exterior".
 
     % Plot the structures.
-    if isempty(varargin)
-        imagesc(phi2p(phi, p_lims)', p_lims); 
-    elseif strcmp(varargin, 'curvature')
-        imagesc(abs(compute_curvature(phi))', [0 3]); 
-    end
+    imagesc(phi2p(phi, p_lims, 0)', p_lims); 
 
     % colormap('gray');
     axis equal tight; 

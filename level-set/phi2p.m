@@ -4,19 +4,22 @@
 %% Description
 %
 
-function [p] = phi2p(phi, varargin)
+function [p, phi] = phi2p(phi, p_lims, varargin)
+
+    if isempty(varargin)
+        closure_shift = 0.5 * [1 -1];
+    else
+        closure_shift = varargin{1};
+    end
+
+    phi = smooth_phi(phi, closure_shift);
 
     d_tot = dist_to_border(phi);
 
     %% Produce p.
 
-    if ~isempty(varargin)
-        p_lims = varargin{1};
-        p_raw = d_tot .* (-1 * (phi < 0) + 1 * (phi > 0));
-        p = (max(p_lims) - min(p_lims))/2 * (p_raw + 1) + min(p_lims);
-    else 
-        p = nan;
-    end
+    p_raw = d_tot .* (-1 * (phi < 0) + 1 * (phi > 0));
+    p = (max(p_lims) - min(p_lims))/2 * (p_raw + 1) + min(p_lims);
 
     % % Graph result.
     % lset_plot(phi)
