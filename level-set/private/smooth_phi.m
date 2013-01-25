@@ -3,7 +3,7 @@
 
 function [phi] = smooth_phi(phi, shift_distances)
 
-    regularize = @(phi) clamp_phi(signed_distance(phi, 1e-3));
+    regularize = @(phi) clamp_phi(signed_distance(phi, 3e-3));
 
     phi = regularize(phi);
     for sd = shift_distances
