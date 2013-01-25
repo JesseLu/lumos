@@ -41,9 +41,9 @@ function [vis_result, p] = solve_design_problem(gen_problem, p0, varargin)
 
     %% Optimize
     if isempty(p0)
-        p0 = mean(g.p_range, 2);
+        % p0 = mean(sqrt(g.p_range), 2).^2;
         % p0 = randn(size(g.p_range, 1), 1);
-        % p0 = min(g.p_range, [], 2);
+        p0 = max(g.p_range, [], 2);
     elseif numel(p0) == 1
         p0 = p0 * ones(size(g.p_range, 1), 1);
     end
