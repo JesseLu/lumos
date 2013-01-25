@@ -22,7 +22,7 @@ function [mode, design_areas] = model_I(omega, in, out, varargin)
     end
 
     eps_lo = 2.25;
-    eps_hi = 13;
+    eps_hi = 12.25;
     z_center = dims(3)/2;
     z_thickness = 220 / 40;
     border = 13;

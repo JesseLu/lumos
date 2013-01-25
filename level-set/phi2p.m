@@ -1,10 +1,10 @@
-%% phi_to_p
+%% phi2p
 % Transform level-set representation to density representation.
 
 %% Description
 %
 
-function [p, phi] = phi_to_p(phi, p_lims)
+function [p, phi, on_border] = phi2p(phi, varargin)
 
     dims = size(phi);
     
@@ -65,15 +65,24 @@ function [p, phi] = phi_to_p(phi, p_lims)
 
     %% Produce p.
 
-    p_raw = d_tot .* (-1 * (phi < 0) + 1 * (phi > 0));
-    p = (max(p_lims) - min(p_lims))/2 * (p_raw + 1) + min(p_lims);
+    if ~isempty(varargin)
+        p_lims = varargin{1};
+        p_raw = d_tot .* (-1 * (phi < 0) + 1 * (phi > 0));
+        p = (max(p_lims) - min(p_lims))/2 * (p_raw + 1) + min(p_lims);
+    else 
+        p = nan;
+    end
 
 
-    %% Produce a clamped phi.
+    %% Produce a clamped phi
     % For values that are not on a border, clamp at -1 or +1.
 
     phi = (d_tot ~= 1) .* phi + ...
             (d_tot == 1) .* (-1 * (phi < 0) + 1 * (phi > 0));
+
+    %% Mark points controlling a border
+
+    on_border = (d_tot ~= 1);
 
     % % Graph result.
     % lset_plot(phi)

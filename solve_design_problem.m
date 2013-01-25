@@ -15,20 +15,20 @@ function [vis_result, p] = solve_design_problem(gen_problem, p0, varargin)
                             'p_range', ones(opt_prob.z_len, 1) * [0 1], ...
                             'scheme', 'continuous-linear');
 
-    vec = @(u) u(:);
-    unvec = @(u) reshape(u, design_area);
-    get_phi = @(p) vec(p_to_phi(unvec(p), [0 1]));
-    struct_obj{2} = struct( 'm', @(phi) vec(phi_to_p(unvec(phi), [0 1])), ...
-                            'w', @(phi) 0, ...
-                            'p_range', ones(opt_prob.z_len, 1) * [-1 1], ...
-                            'scheme', 'continuous');
-
-
-
-    p0 = get_phi(p0);
-    imagesc(unvec(p0))
-    pause
-    g = struct_obj{2};
+%     vec = @(u) u(:);
+%     unvec = @(u) reshape(u, design_area);
+%     get_phi = @(p) vec(p_to_phi(unvec(p), [0 1]));
+%     struct_obj{2} = struct( 'm', @(phi) vec(phi_to_p(unvec(phi), [0 1])), ...
+%                             'w', @(phi) 0, ...
+%                             'p_range', ones(opt_prob.z_len, 1) * [-1 1], ...
+%                             'scheme', 'continuous');
+% 
+% 
+% 
+%     p0 = get_phi(p0);
+%     imagesc(unvec(p0))
+%     pause
+    g = struct_obj{1};
 
 
     %% Get options
@@ -42,6 +42,7 @@ function [vis_result, p] = solve_design_problem(gen_problem, p0, varargin)
     %% Optimize
     if isempty(p0)
         p0 = mean(g.p_range, 2);
+        % p0 = randn(size(g.p_range, 1), 1);
         % p0 = min(g.p_range, [], 2);
     elseif numel(p0) == 1
         p0 = p0 * ones(size(g.p_range, 1), 1);
@@ -52,7 +53,7 @@ function [vis_result, p] = solve_design_problem(gen_problem, p0, varargin)
                         'slice_dir', 'z', ...
                         'slice_index', 1);
 
-    paradigm = 'local';
+    paradigm = 'global';
     num_iters = 40;
     err_thresh = 1e-3;
 
