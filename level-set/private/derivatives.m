@@ -16,40 +16,44 @@ function [dx, dy, dxx, dxy, dyy] = derivatives(phi)
 %         Second partial derivatives of PHI with mirror boundary conditions.
 
 
-% Short-cut function to shift phi.
-shift = @(s) shift_array(phi, -s);
+    % Short-cut function to shift phi.
+    % shift = @(s) shift_array(phi, -s);
+    function [phi_shifted] = shift(s)
+        phi_shifted = shift_array(phi, -s);
+    end
 
 
-    %
-    % Obtain shifted versions of phi.
-    %
+        %
+        % Obtain shifted versions of phi.
+        %
 
-xn = shift([-1 0]);
-xp = shift([+1 0]);
-yn = shift([0 -1]);
-yp = shift([0 +1]);
-
-
-    %
-    % Compute all needed versions of the first derivatives.
-    %
-
-dx.p = xp - phi;
-dx.o = 1/2 * (xp - xn);
-dx.n = phi - xn;
-
-dy.p = yp - phi;
-dy.o = 1/2 * (yp - yn);
-dy.n = phi - yn;
+    xn = shift([-1 0]);
+    xp = shift([+1 0]);
+    yn = shift([0 -1]);
+    yp = shift([0 +1]);
 
 
-    %
-    % Compute the second derivatives.
-    %
+        %
+        % Compute all needed versions of the first derivatives.
+        %
 
-if (nargout > 2) % Only if the user asks for them though.
-    dxx = xp - 2*phi + xn;
-    dyy = yp - 2*phi + yn;
-    dxy = 1/4 * (shift([+1 +1]) - shift([+1 -1]) - ...
-        shift([-1 +1]) + shift([-1 -1])); 
+    dx.p = xp - phi;
+    dx.o = 1/2 * (xp - xn);
+    dx.n = phi - xn;
+
+    dy.p = yp - phi;
+    dy.o = 1/2 * (yp - yn);
+    dy.n = phi - yn;
+
+
+        %
+        % Compute the second derivatives.
+        %
+
+    if (nargout > 2) % Only if the user asks for them though.
+        dxx = xp - 2*phi + xn;
+        dyy = yp - 2*phi + yn;
+        dxy = 1/4 * (shift([+1 +1]) - shift([+1 -1]) - ...
+            shift([-1 +1]) + shift([-1 -1])); 
+    end
 end

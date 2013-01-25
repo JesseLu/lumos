@@ -13,6 +13,11 @@ function [phi] = p2phi(p, p_lims, varargin)
         closure_shift = varargin{1};
     end
 
+    function [phi] = my_smooth_phi(phi)
+        phi = signed_distance(phi, 1e-3);
+        phi = smooth_phi(phi, closure_shift);
+    end
+
     %% Bisect until we replicate the sum of p.
 
     % Find the sum.
@@ -27,7 +32,8 @@ function [phi] = p2phi(p, p_lims, varargin)
 
 
         % Bisect.
-        phi_curr = smooth_phi(p - level, closure_shift);
+        % phi_curr = smooth_phi(p - level, closure_shift);
+        phi_curr = my_smooth_phi(p - level);
         p_curr = phi2p(phi_curr, p_lims); % Obtain transformed p.
         err = sum(p_curr(:)) - p_sum; % Calculate error.
         percent_err = abs(err) / abs(p_sum);
@@ -46,5 +52,6 @@ function [phi] = p2phi(p, p_lims, varargin)
     end
     
     % Obtain optimal phi.
-    phi = smooth_phi(p - level, closure_shift);
+    % phi = smooth_phi(p - level, closure_shift);
+    phi = my_smooth_phi(p - level);
 end

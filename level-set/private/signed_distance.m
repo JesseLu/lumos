@@ -28,51 +28,51 @@ function [phi, err_hist] = signed_distance(phi, err_limit)
 
 
 
-% Assume effectively unit-less grid resolution.
-grid_spacing = 1.0;
+    % Assume effectively unit-less grid resolution.
+    grid_spacing = 1.0;
 
 
-    %
-    % Make sure there are actually boundaries on the grid!
-    %
+        %
+        % Make sure there are actually boundaries on the grid!
+        %
 
-if (all(sign(phi(:)) == 1) | all(sign(phi(:)) == -1))
-    warning('No interfaces found on the grid.');
-    return
-    % error('No interfaces found on the grid.');
-end
-
-
-    %
-    % Compute the (smoothed) signed function S.
-    %
-
-S = phi ./ sqrt(phi.^2 + grid_spacing^2);
-
-
-    %
-    % Iterate until the error in the norm of the gradient is acceptable.
-    %
-
-dt = 0.5;
-err_hist = [];
-
-for k = 1 : 1e3
-    norm_g = norm_gradient(phi, S);
-    phi = phi - dt * S .* (norm_g - 1);
-
-    % err = max(max(abs(norm_gradient(phi, S) - 1)));
-    err = norm(norm_gradient(phi, S) - 1) / prod(size(phi));
-    err_hist(end+1) = err;
-
-    if isnan(phi)
-        figure(1); subplot 111;
-        imagesc(norm_gradient(phi, S));
-        error('thing');
-    end
-
-    if (err < err_limit)
+    if (all(sign(phi(:)) == 1) | all(sign(phi(:)) == -1))
+        warning('No interfaces found on the grid.');
         return
+        % error('No interfaces found on the grid.');
     end
-end
+
+
+        %
+        % Compute the (smoothed) signed function S.
+        %
+
+    S = phi ./ sqrt(phi.^2 + grid_spacing^2);
+
+
+        %
+        % Iterate until the error in the norm of the gradient is acceptable.
+        %
+
+    dt = 0.5;
+    err_hist = [];
+
+    for k = 1 : 1e3
+        norm_g = norm_gradient(phi, S);
+        phi = phi - dt * S .* (norm_g - 1);
+
+        % err = max(max(abs(norm_gradient(phi, S) - 1)));
+        err = norm(norm_gradient(phi, S) - 1) / prod(size(phi));
+        err_hist(end+1) = err;
+
+        if isnan(phi)
+            figure(1); subplot 111;
+            imagesc(norm_gradient(phi, S));
+            error('thing');
+        end
+
+        if (err < err_limit)
+            return
+        end
+    end
 

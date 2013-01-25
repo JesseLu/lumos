@@ -26,7 +26,10 @@ function [d_tot] = dist_to_border(phi)
     d = {d, d, d, d};
 
     % Shortcut function to access individual elements in the arrays.
-    s2i = @(i, j) sub2ind(dims, i, j);
+    % s2i = @(i, j) sub2ind(dims, i, j);
+    function [ind] = s2i(i, j)
+        ind = sub2ind(dims, i, j);
+    end
 
     % Mark distances to contour from left, right, top, and bottom.
     d{1}(s2i(floor(c(1,x_int)), c(2,x_int))) = rc(1,x_int); % Left.
@@ -38,7 +41,10 @@ function [d_tot] = dist_to_border(phi)
     %% Fuse distances to get the approximate nearest distance to edge.
 
     % Helper function to find element wise minimum of two 2D arrays.
-    my_cat = @(A, B) min(cat(3, A, B), [], 3);
+    % my_cat = @(A, B) min(cat(3, A, B), [], 3);
+    function [C] = my_cat(A, B)
+        C = min(cat(3, A, B), [], 3);
+    end
 
     % For points with contours directly above and below, 
     % or to the right and left, use the distance to the closest contour.
@@ -57,4 +63,4 @@ function [d_tot] = dist_to_border(phi)
     d_tot(ind) = 0;
 
 
-
+end
