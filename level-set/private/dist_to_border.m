@@ -39,6 +39,8 @@ function [d_tot] = dist_to_border(phi)
 
 
     %% Fuse distances to get the approximate nearest distance to edge.
+    d_tot = min(cat(3, d{1}, d{2}, d{3}, d{4}), [], 3);
+    return
 
     % Helper function to find element wise minimum of two 2D arrays.
     % my_cat = @(A, B) min(cat(3, A, B), [], 3);

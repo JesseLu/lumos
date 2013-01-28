@@ -5,10 +5,16 @@
 %% Description
 %
 
-function [phi] = p2phi(p, p_lims)
+function [phi] = p2phi(p, p_lims, varargin)
+
+    if isempty(varargin)
+        sdf_err = 1e-3;
+    else
+        sdf_err = varargin{1};
+    end
 
     function [phi] = my_smooth_phi(phi)
-        phi = signed_distance(phi, 1e-3);
+        phi = signed_distance(phi, sdf_err);
     end
 
     %% Bisect until we replicate the sum of p.

@@ -7,7 +7,7 @@
 function [p, phi] = phi2p(phi, p_lims, varargin)
 
     if isempty(varargin)
-        closure_shift = 0.5 * [1 -1];
+        closure_shift = 0.0 * [1 -1];
     else
         closure_shift = varargin{1};
     end
