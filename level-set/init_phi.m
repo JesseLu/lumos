@@ -1,19 +1,15 @@
-%% p2phi
+%% init_phi
 % Convert a density representation to a level-set representation
 % of a structure.
 
 %% Description
 %
 
-function [phi] = p2phi(p, p_lims, varargin)
-
-    if isempty(varargin)
-        sdf_err = 1e-3;
-    else
-        sdf_err = varargin{1};
-    end
+function [phi] = init_phi(p, p_lims, sdf_err, closure)
 
     function [phi] = my_smooth_phi(phi)
+        phi = signed_distance(phi, sdf_err);
+        phi = smooth_phi(phi, closure);
         phi = signed_distance(phi, sdf_err);
     end
 

@@ -6,7 +6,7 @@ function plot_level_set(phi, p_lims)
 %     light regions are considered "exterior".
 
     % Plot the structures.
-    imagesc(phi2p(phi, p_lims, 0)', p_lims); 
+    imagesc(phi2p(phi, p_lims)', p_lims); 
 
     % colormap('gray');
     axis equal tight; 
