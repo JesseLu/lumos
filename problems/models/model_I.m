@@ -1,24 +1,26 @@
 %% model_I
 % One port on the left and one port on the right.
 
-function [mode, design_areas] = model_I(omega, in, out, varargin)
+function [mode, design_areas] = model_I(omega, wg_types, in, out, varargin)
 
 %% Output parameters
 % Fills in everything for mode structures, except for the in and out fields.
 % At the same time, make the in and out fields easier to specify.
 
+    % Check if user has selected the 2D option.
     if strcmp('2D', varargin)
         flatten = true;
     else
         flatten = false;
     end
 
-    if flatten
-        dims = [60 60 1];
-        pml_thickness = [10 10 0];
-    else
-        dims = [60 60 40];
-        pml_thickness = [10 10 10];
+    % Basic dimensions.
+    dims = [60 60 40];
+    pml_thickness = [10 10 10];
+
+    if flatten % Make 2D.
+        dims(3) = 1;
+        pml_thickness(3) = 0;
     end
 
     eps_lo = 2.25;
@@ -41,9 +43,9 @@ function [mode, design_areas] = model_I(omega, in, out, varargin)
     left_pos = [border-2, dims(2)/2, z_center];
     right_pos = [dims(1)-border+3, dims(2)/2, z_center];
 
-    [wg{1}, ports{1}] = wg_lores(epsilon, 'single', 'x+', 2*border, left_pos);
+    [wg{1}, ports{1}] = wg_lores(epsilon, wg_types{1}, 'x+', 2*border, left_pos);
 
-    [wg{2}, ports{2}] = wg_lores(epsilon, 'single', 'x-', 2*border, right_pos);
+    [wg{2}, ports{2}] = wg_lores(epsilon, wg_types{2}, 'x-', 2*border, right_pos);
 
     epsilon = add_planar(epsilon, z_center, z_thickness, {background, wg{:}});
  
