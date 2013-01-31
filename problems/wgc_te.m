@@ -4,7 +4,7 @@ function [opt_prob, vis_options, design_area] = wgconv(varargin)
     omega = 2 * pi / 40;
 
     in = io(1, 'te0', 1);
-    out = {io(2, 'te1', [0.9 2]), io(2, 'te0', [0 0.01])};
+    out = {io(2, 'te1', [0.9 1]), io(2, 'te0', [0 0.01])};
     % out = io(2, 'te1', [0.9 2]);
     modes(1) = model_I(omega, {'single', 'double'}, in, out, varargin{:});
     % modes(2) = model_I(omega, {'single', 'double'}, in, out, varargin{:});
