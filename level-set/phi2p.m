@@ -5,7 +5,7 @@
 % Calculates each grid points distance to the border and uses that
 % as an approximate density value.
 
-function [p, phi] = phi2p(phi, p_lims)
+function [p] = phi2p(phi, p_lims)
 
     d_tot = dist_to_border(phi);
 
