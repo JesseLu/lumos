@@ -5,8 +5,21 @@
 % Solves the problem specified, using the parameterization and 
 % paradigm desired.
 
-function [z, p, vis_result] = lumos(name, gen_problem, paradigm, param_type, ...
-                                p0, num_iters, err_thresh, varargin)
+function [z, p, vis_result] = lumos(name, problem, paradigm, param_type, ...
+                                p0, term_conds, varargin)
+
+    %% Parse inputs.
+    if length(term_conds) == 1
+        num_iters = term_conds(1);
+        err_thresh = nan;
+
+    elseif length(term_conds) == 2
+        num_iters = term_conds(1);
+        err_thresh = term_conds(2);
+ 
+    else
+        error('Could not understand termination conditions.');
+    end
 
     %% Parse optional parameters.
     lumos_options = struct( 'restart', false);
@@ -17,7 +30,9 @@ function [z, p, vis_result] = lumos(name, gen_problem, paradigm, param_type, ...
     %% Generate the problem
     % This includes the physics residual and field design objectives,
     % as well as many other details.
-    [opt_prob, vis_options, design_area] = gen_problem();
+    opt_prob = problem.opt_prob;
+    vis_options = problem.vis_options;
+    design_area = problem.design_area;
 
 
     %% Set paradigm 
@@ -28,6 +43,7 @@ function [z, p, vis_result] = lumos(name, gen_problem, paradigm, param_type, ...
                                             vis_options.vis_layer, ...
                                             vis_options.mode_sel, ...
                                             k, x, z, p, progress);
+        saveas(gcf, [results_folder(), name, '_', sprintf('%04d', k)], 'png');
     end
 
     options = struct('paradigm', paradigm, ...
@@ -102,8 +118,8 @@ function [z, p, vis_result] = lumos(name, gen_problem, paradigm, param_type, ...
     end
 
     %% Take care of restart, if necessary
-    options.state_file = ['results/', name, '_state.mat'];
-    options.history_file = ['results/', name, '_history.h5'];
+    options.state_file = [results_folder(), name, '_state.mat'];
+    options.history_file = [results_folder(), name, '_history.h5'];
 
     if lumos_options.restart
         opt_state = load(options.state_file);

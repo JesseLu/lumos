@@ -1,5 +1,5 @@
 
-function [opt_prob, vis_options, design_area] = wgconv(varargin)
+function [problem] = wgc_te(varargin)
 
     omega = 2 * pi / 40;
 
@@ -25,3 +25,7 @@ function [opt_prob, vis_options, design_area] = wgconv(varargin)
                                     'slice_index', 1);
 
    design_area = modes(1).design_area;
+
+   problem = struct('opt_prob', opt_prob, ...
+                    'vis_options', vis_options, ...
+                    'design_area', design_area);
