@@ -43,7 +43,7 @@ function [z, p, vis_result] = lumos(name, problem, paradigm, param_type, ...
                                             vis_options.vis_layer, ...
                                             vis_options.mode_sel, ...
                                             k, x, z, p, progress);
-        saveas(gcf, [results_folder(), name, '_', sprintf('%04d', k)], 'png');
+        saveas(gcf, [name, '_', sprintf('%04d', k)], 'png');
     end
 
     options = struct('paradigm', paradigm, ...
@@ -118,8 +118,8 @@ function [z, p, vis_result] = lumos(name, problem, paradigm, param_type, ...
     end
 
     %% Take care of restart, if necessary
-    options.state_file = [results_folder(), name, '_state.mat'];
-    options.history_file = [results_folder(), name, '_history.h5'];
+    options.state_file = [name, '_state.mat'];
+    options.history_file = [name, '_history.h5'];
 
     if lumos_options.restart
         opt_state = load(options.state_file);

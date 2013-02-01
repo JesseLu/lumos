@@ -2,20 +2,29 @@
 % Performs a design "recipe", which is a collection of calls to lumos().
 
 %% Description
+% Strings together multiple calls to lumos to get a design.
 
 function [] = run_design_recipe(problem_name, recipe_name)
 
     gen_problem = eval(['@', problem_name]);
     problem = gen_problem('2D');
 
+    % Set up the results directory for this recipe run.
+    my_run_dir = [results_dir(), problem_name, '_', recipe_name, filesep];
+    if isdir(my_run_dir)
+        rmdir(my_run_dir, 's'); % Recursive remove.
+    end
+    mkdir(my_run_dir);
+
 
     function [p] = run_step(params, step_name)
-        my_step_name = [problem_name, '_', recipe_name, '_step', step_name];
+        my_step_name = [my_run_dir, 'step', step_name];
         fprintf('\nRunning step: %s\n', my_step_name);
         use_restart = false;
         while true
             try
-                [z, p, vis] = lumos(my_step_name, problem, params{:}, 'restart', use_restart);
+                [z, p, vis] = lumos(my_step_name, problem, params{:}, ...
+                                    'restart', use_restart);
                 break;
             catch exception
                 fprintf(getReport(exception, 'basic'));
@@ -34,10 +43,12 @@ function [] = run_design_recipe(problem_name, recipe_name)
     switch_to_phi = @(p) my_phi_init(p, [0 1]);
     reinit_phi = @(phi) my_phi_init(phi, [-1 1]);
 
+    % Log the diary.
+    diary([my_run_dir, 'diary.txt']);
 
     switch recipe_name
         case 'rA'
-            num_iters = [100 40 40] ./ 10;
+            num_iters = [100 40 40];
 
             % Global optimization for 100 steps.
             p = run_step({'global', 'density', [], [num_iters(1), 1e-3]}, 'A');
