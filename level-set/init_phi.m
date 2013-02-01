@@ -26,8 +26,8 @@ function [phi] = init_phi(p, p_lims, sdf_err, closure)
         level = mean([max_level, min_level]); % Obtain new level.
 
         % Bisect.
-        phi_curr = my_smooth_phi(p - level);
-        [p_curr, phi] = phi2p(phi_curr, p_lims); % Obtain transformed p.
+        phi = my_smooth_phi(p - level);
+        p_curr = phi2p(phi, p_lims); % Obtain transformed p.
         err = sum(p_curr(:)) - p_sum; % Calculate error.
         percent_err = abs(err) / abs(p_sum);
 
