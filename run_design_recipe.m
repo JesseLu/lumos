@@ -48,19 +48,19 @@ function [] = run_design_recipe(problem_name, recipe_name)
 
     switch recipe_name
         case 'rA'
-            num_iters = [100 40 40];
+            num_iters = 100;
 
             % Global optimization for 100 steps.
-            p = run_step({'global', 'density', [], [num_iters(1), 1e-3]}, 'A');
+            p = run_step({'global', 'density', [], [num_iters, 1e-3]}, 'A');
 
             % Local density optimization.
-            p = run_step({'local', 'density', p, num_iters(2)}, 'B');
+            p = run_step({'local', 'density', p, num_iters}, 'B');
 
             % Switch to level-set.
             phi = switch_to_phi(p);
             for i = 1 : 5
                 phi = run_step({'local', 'level-set', reinit_phi(phi), ...
-                                num_iters(3)}, ['C', num2str(i)]);
+                                num_iters}, ['C', num2str(i)]);
             end
 
         otherwise
