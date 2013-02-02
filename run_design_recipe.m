@@ -7,7 +7,7 @@
 function [] = run_design_recipe(problem_name, recipe_name)
 
     gen_problem = eval(['@', problem_name]);
-    problem = gen_problem('2D');
+    problem = gen_problem('type', true);
 
     % Set up the results directory for this recipe run.
     my_run_dir = [results_dir(), problem_name, '_', recipe_name, filesep];

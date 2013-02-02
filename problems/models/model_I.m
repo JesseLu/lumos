@@ -1,18 +1,11 @@
 %% model_I
 % One port on the left and one port on the right.
 
-function [mode, design_areas] = model_I(omega, wg_types, in, out, varargin)
+function [mode, vis_layer] = model_I(omega, in, out, wg_types, type, flatten)
 
 %% Output parameters
 % Fills in everything for mode structures, except for the in and out fields.
 % At the same time, make the in and out fields easier to specify.
-
-    % Check if user has selected the 2D option.
-    if strcmp('2D', varargin)
-        flatten = true;
-    else
-        flatten = false;
-    end
 
     % Basic dimensions.
     dims = [60 60 40];
@@ -71,4 +64,17 @@ function [mode, design_areas] = model_I(omega, wg_types, in, out, varargin)
                     'S', (eps_hi - eps_lo) * S, ...
                     'design_area', design_area);
 
+
+    %% Determine the visualization condition.
+    if strcmp(in.mode(1:2), 'te')
+        vis_component = 2; % Look at Ey.
+    elseif strcmp(in.mode(1:2), 'tm')
+        vis_component = 3; % Look at Ez.
+    else
+        error('Could not determinte visualization component.');
+    end
+
+    vis_layer = struct( 'component', vis_component, ...
+                        'slice_dir', 'z', ...
+                        'slice_index', round(dims(3)/2));
    
