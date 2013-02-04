@@ -6,8 +6,17 @@
 
 function [] = run_design_recipe(problem_name, recipe_name)
 
-    gen_problem = eval(['@', problem_name]);
-    problem = gen_problem('type', true);
+    % Detect the 2D option.
+    if ~isempty(strfind(problem_name, '2D'))
+        flatten_option = true;
+        exec_problem_name = strrep(problem_name, '2D', '');  
+    else 
+        flatten_option = false;
+    end
+
+
+    gen_problem = eval(['@', exec_problem_name]);
+    problem = gen_problem({'flatten', flatten_option});
 
     % Set up the results directory for this recipe run.
     my_run_dir = [results_dir(), problem_name, '_', recipe_name, filesep];

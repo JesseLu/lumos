@@ -2,18 +2,20 @@
 % Generic function to create the design problem.
 
 function problem = get_problem(omega, in, out, vis_options, ...
-                                model_structure, model_type, flatten)
+                                model_structure, custom_model_options)
+
+    model_options = parse_model_options(custom_model_options);
 
     % Get the modes.
     for i = 1 : length(omega)
         [modes(i), vis_options(i).vis_layer] = ...
                                 model_I(omega{i}, in{i}, out{i}, ...
-                                        model_structure, model_type, flatten);
+                                        model_structure, model_options);
     end
 
 
     % Translate.
-    if flatten
+    if model_options.flatten
         solver = @solve_local;
     else
         solver = @solve_maxwell;

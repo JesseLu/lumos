@@ -6,8 +6,8 @@ function [problem] = wgc_te(custom_model_options)
     N = 1; % Number of modes.
 
     omega{1} = 2 * pi / 40;
-    in{1} = io(1, 'te0', 1);
-    out{1} = {io(2, 'te1', [0.9 1]), io(2, 'te0', [0 0.01])};
+    in{1} = io(1, 'tm0', 1);
+    out{1} = {io(2, 'tm1', [0.9 1]), io(2, 'tm0', [0 0.01])};
 
     vis_options.mode_sel = 1 : N;
 
