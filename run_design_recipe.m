@@ -45,7 +45,7 @@ function [] = run_design_recipe(problem_name, recipe_name)
 
     function [phi] = my_phi_init(p, p_lims)
             p = reshape(p, problem.design_area);
-            phi = init_phi(p, p_lims, 3e-3, 0.5 * [1 -1]);
+            phi = init_phi(p, p_lims, 1e-2, 0.5 * [1 -1]);
             phi = phi(:);
     end
 
