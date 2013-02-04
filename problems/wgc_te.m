@@ -13,4 +13,4 @@ function [problem] = wgc_te(custom_model_options)
 
     % Build the problem.
     problem = get_problem(omega, in, out, vis_options, ...
-                            model_structure, custom_model_options);
+                            @model_I, model_structure, custom_model_options);

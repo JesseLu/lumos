@@ -30,6 +30,9 @@ function [] = run_design_recipe(problem_name, recipe_name)
         my_step_name = [my_run_dir, 'step', step_name];
         fprintf('\nRunning step: %s\n', my_step_name);
         use_restart = false;
+        [z, p, vis] = lumos(my_step_name, problem, params{:}, ...
+                            'restart', use_restart);
+        return 
         while true
             try
                 [z, p, vis] = lumos(my_step_name, problem, params{:}, ...
