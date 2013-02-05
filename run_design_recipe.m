@@ -4,7 +4,7 @@
 %% Description
 % Strings together multiple calls to lumos to get a design.
 
-function [] = run_design_recipe(problem_name, recipe_name)
+function [] = run_design_recipe(problem_name, recipe_name, num_iters)
 
     % Detect the 2D option.
     if ~isempty(strfind(problem_name, '2D'))
@@ -60,7 +60,7 @@ function [] = run_design_recipe(problem_name, recipe_name)
 
     switch recipe_name
         case 'rA'
-            num_iters = 100;
+            % num_iters = 3;
 
             % Global optimization for 100 steps.
             p = run_step({'global', 'density', [], [num_iters, 1e-3]}, 'A');
