@@ -11,6 +11,7 @@ function [phi] = init_phi(p, p_lims, sdf_err, closure)
         phi = signed_distance(phi, sdf_err);
         phi = smooth_phi(phi, closure);
         phi = signed_distance(phi, sdf_err);
+        phi = smooth_phi(phi, 0);
     end
 
     %% Bisect until we replicate the sum of p.

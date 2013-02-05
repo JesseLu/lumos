@@ -4,7 +4,7 @@
 %% Description
 % Strings together multiple calls to lumos to get a design.
 
-function [] = run_design_recipe(problem_name, recipe_name, num_iters)
+function [] = run_design_recipe(problem_name, recipe_name, varargin)
 
     % Detect the 2D option.
     if ~isempty(strfind(problem_name, '2D'))
@@ -30,9 +30,10 @@ function [] = run_design_recipe(problem_name, recipe_name, num_iters)
         my_step_name = [my_run_dir, 'step', step_name];
         fprintf('\nRunning step: %s\n', my_step_name);
         use_restart = false;
-        [z, p, vis] = lumos(my_step_name, problem, params{:}, ...
-                            'restart', use_restart);
-        return 
+%         % For no error override.
+%         [z, p, vis] = lumos(my_step_name, problem, params{:}, ...
+%                             'restart', use_restart);
+%         return 
         while true
             try
                 [z, p, vis] = lumos(my_step_name, problem, params{:}, ...
@@ -46,33 +47,55 @@ function [] = run_design_recipe(problem_name, recipe_name, num_iters)
         end
     end
 
-    function [phi] = my_phi_init(p, p_lims)
-            p = reshape(p, problem.design_area);
-            phi = init_phi(p, p_lims, 1e-2, 0.5 * [1 -1]);
-            phi = phi(:);
+    function [phi] = switch_to_phi(p)
+        p = reshape(p, problem.design_area);
+        phi = init_phi(p, [0 1], 1e-2, 0.5 * [1 -1]);
+        phi = phi(:);
     end
 
-    switch_to_phi = @(p) my_phi_init(p, [0 1]);
-    reinit_phi = @(phi) my_phi_init(phi, [-1 1]);
+    function [phi] = reinit_phi(phi)
+        phi = reshape(phi, problem.design_area);
+        p = phi2p(phi, [0 1]);
+        phi = switch_to_phi(p);
+    end
+        
+    % reinit_phi = @(phi) switch_to_phi(phi2p(reshape(phi, problem.design_area), [0 1]));
 
     % Log the diary.
     diary([my_run_dir, 'diary.txt']);
 
+
     switch recipe_name
-        case 'rA'
-            % num_iters = 3;
+        case 'r1'
+            % Options structure
+            options = struct(   'num_iters', 100, ...
+                                'skip_A', false, ...
+                                'skip_B', false, ...
+                                'p0', 3/4);
+
+            % Parse optional parameters.
+            for k = 2 : 2 : length(varargin)
+                options = setfield(options, varargin{k-1}, varargin{k});
+            end
+
+            p = options.p0;
 
             % Global optimization for 100 steps.
-            p = run_step({'global', 'density', [], [num_iters, 1e-3]}, 'A');
+            if ~options.skip_A
+                p = run_step({'global', 'density', p, ...
+                                [options.num_iters, 1e-3]}, 'A');
+            end
 
             % Local density optimization.
-            p = run_step({'local', 'density', p, num_iters}, 'B');
+            if ~options.skip_B
+                p = run_step({'local', 'density', p, options.num_iters}, 'B');
+            end
 
             % Switch to level-set.
             phi = switch_to_phi(p);
             for i = 1 : 5
                 phi = run_step({'local', 'level-set', reinit_phi(phi), ...
-                                num_iters}, ['C', num2str(i)]);
+                                options.num_iters}, ['C', num2str(i)]);
             end
 
         otherwise
