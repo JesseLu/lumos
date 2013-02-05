@@ -12,6 +12,7 @@ function [] = run_design_recipe(problem_name, recipe_name, varargin)
         exec_problem_name = strrep(problem_name, '2D', '');  
     else 
         flatten_option = false;
+        exec_problem_name = problem_name;
     end
 
 

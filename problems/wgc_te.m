@@ -5,7 +5,7 @@ function [problem] = wgc_te(custom_model_options)
 
     N = 1; % Number of modes.
 
-    omega{1} = 2 * pi / 40;
+    omega{1} = 2 * pi / 38.75;
     in{1} = io(1, 'te0', 1);
     out{1} = {io(2, 'te1', [0.9 1]), io(2, 'te0', [0 0.01])};
 

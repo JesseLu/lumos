@@ -5,12 +5,12 @@ function [problem] = spl_wdm(custom_model_options)
 
     N = 2; % Number of modes.
 
-    omega{1} = 2 * pi / 40;
+    omega{1} = 2 * pi / 38.75;
     in{1} = io(1, 'te0', 1);
     % out{1} = io(2, 'te0', [0.9 1]);
     out{1} = {io(2, 'te0', [0.9 1]), io(3, 'te0', [0 0.01])};
 
-    omega{2} = 2 * pi / 39;
+    omega{2} = 2 * pi / 32.75;
     in{2} = io(1, 'te0', 1);
     % out{2} = io(3, 'te0', [0.9 1]);
     out{2} = {io(2, 'te0', [0 0.01]), io(3, 'te0', [0.9 1])};
