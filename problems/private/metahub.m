@@ -16,7 +16,7 @@ function [model_structure, omega, in, out] = metahub(M)
             omega{cnt} = omegas(freq);
             in{cnt} = io(port, 'te0', 1);
             out_port = mod(port+freq-2, M) + 1 + M;
-            out{cnt} = io(out_port, 'te0', [0.9 1]);
+            out{cnt} = io(out_port, 'te0', [0.8 1]);
         end
     end
  

@@ -20,7 +20,7 @@ function [mode, vis_layer] = model_V(omega, in, out, wg_types, options)
         wg_dirs{i} = '+';
         wg_dirs{M+i} = '-';
 
-        ypos = wg_spacer * ((i-1) - (M-1)/2) + (sim_length-1)/2;
+        ypos = round(wg_spacer * ((i-1) - (M-1)/2) + (sim_length-1)/2);
         wg_ypos{i} = ypos;
         wg_ypos{M+i} = ypos;
     end
