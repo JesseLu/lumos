@@ -9,7 +9,7 @@ function [mode, vis_layer] = model_V(omega, in, out, wg_types, options)
 
     % Number of input and output ports.
     M = length(wg_types) / 2;
-    wg_spacer = 30;
+    wg_spacer = 25;
 
     % Basic dimensions.
     sim_length = wg_spacer * (M + 1) + 10;
