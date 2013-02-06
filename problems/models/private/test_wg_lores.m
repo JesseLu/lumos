@@ -28,7 +28,7 @@ function test_wg_lores(type, mode_num, varargin)
     z_thickness = 250 / 40;
 
     mu = {ones(dims), ones(dims), ones(dims)};
-    [s_prim, s_dual] = stretched_coordinates(omega, dims, [0 0 0]);
+    [s_prim, s_dual] = stretched_coordinates(omega, dims, [0 10 10]);
 
     %% Construct structure
     epsilon = {eps_lo*ones(dims), eps_lo*ones(dims), eps_lo*ones(dims)};

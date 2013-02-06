@@ -51,7 +51,7 @@ function [waveguide, port] = wg_lores(epsilon, type, dir, len, pos)
             end
 
         case 'double' % Contains up to first-order TE and TM modes.
-            width = 750 / grid_spacing;
+            width = 650 / grid_spacing;
 
             % Mode numbers.
             if flatten

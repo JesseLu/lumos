@@ -9,10 +9,10 @@ function [mode, vis_layer] = model_V(omega, in, out, wg_types, options)
 
     % Number of input and output ports.
     M = length(wg_types) / 2;
-    wg_spacer = 25;
+    wg_spacer = 30;
 
     % Basic dimensions.
-    sim_length = wg_spacer * (M + 2);
+    sim_length = wg_spacer * (M + 1) + 10;
     dims = [sim_length sim_length 40];
 
     
@@ -20,7 +20,7 @@ function [mode, vis_layer] = model_V(omega, in, out, wg_types, options)
         wg_dirs{i} = '+';
         wg_dirs{M+i} = '-';
 
-        ypos = wg_spacer * ((i-1) - (M-1)/2) + sim_length/2;
+        ypos = wg_spacer * ((i-1) - (M-1)/2) + (sim_length-1)/2;
         wg_ypos{i} = ypos;
         wg_ypos{M+i} = ypos;
     end

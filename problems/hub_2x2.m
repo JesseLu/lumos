@@ -7,7 +7,7 @@ function [problem] = hub_2x2(custom_model_options)
     end
 
 
-    omegas = [32.75, 38.75];
+    omegas = 2*pi ./ (38.75 - 2 * [0:M-1]);
 
     cnt = 0;
     for port = 1 : M
@@ -17,9 +17,7 @@ function [problem] = hub_2x2(custom_model_options)
             in{cnt} = io(port, 'te0', 1);
             out_port = mod(port+freq-2, M) + 1 + M;
             out{cnt} = io(out_port, 'te0', [0.9 1]);
-            break
         end
-        break
     end
 %     omega{1} = 2 * pi / 38.75;
 %     in{1} = io(1, 'te0', 1);
@@ -32,12 +30,8 @@ function [problem] = hub_2x2(custom_model_options)
 %     out{2} = {io(2, 'te0', [0 0.01]), io(3, 'te0', [0.9 1])};
 % 
     N = M^2; % Number of modes.
-    N = 1;
     vis_options.mode_sel = 1 : N;
 
-    omega
-    in{1}
-    out{1}
     % Build the problem.
     problem = get_problem(omega, in, out, vis_options, ...
                             @model_H, model_structure, custom_model_options);

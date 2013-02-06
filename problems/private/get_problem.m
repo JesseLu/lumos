@@ -13,14 +13,12 @@ function problem = get_problem(omega, in, out, vis_options, ...
                                         model_structure, model_options);
     end
 
-
     % Translate.
     if model_options.flatten
         solver = @solve_local;
     else
         solver = @solve_maxwell;
     end
-
     opt_prob = translation_layer(modes, solver);
 
     % Get design_area.
