@@ -1,7 +1,7 @@
 %% model_H
 % M ports on the left and M ports on the right.
 
-function [mode, vis_layer] = model_V(omega, in, out, wg_types, options)
+function [mode, vis_layer] = model_H(omega, in, out, wg_types, options)
 
 %% Output parameters
 % Fills in everything for mode structures, except for the in and out fields.

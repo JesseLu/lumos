@@ -64,7 +64,7 @@ function [] = run_design_recipe(problem_name, recipe_name, varargin)
 
     % Log the diary.
     diary([my_run_dir, 'diary.txt']);
-
+    diary on;
 
     switch recipe_name
         case 'r1'
@@ -104,4 +104,5 @@ function [] = run_design_recipe(problem_name, recipe_name, varargin)
     end
 
 
+    diary off;
 end
