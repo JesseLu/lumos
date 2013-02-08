@@ -16,7 +16,7 @@ function [problem] = spl_wdm(custom_model_options)
         out = out{port_num}; % Don't use reject bands.
     end
 
-    N = 1; % Number of modes.
+    N = 4; % Number of modes.
 
     omega{1} = 2 * pi / 38.75;
     in{1} = io(1, 'te0', 1);
