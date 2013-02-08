@@ -29,16 +29,13 @@ Problems
     *   spl_modal: splits first and second order TE modes.
     *   spl_tetm: splits fundamental TE and TM modes.
     *   spl_wdm: wavelength splitter.
-    *   spl_wdm_flat: wavelength splitter with top-hat response.
-        This should also demonstrate robustness to temperature and 
-        fabrication error.
+    *   spl_combo: splits TE modes and wavelengths.
 
 *   Switches/Hubs:
     show that the sky is the limit in terms of in-plane devices.
-    *   hub_3x3: 3 input and output ports each, with 3 wavelengths in each.
+    *   hub_3x3: 3 input and output ports each.
     *   hub_4x4, hub_5x5, hub_6x6: extensions of hub_3x3.
-        Rejection modes and top-hat response can be added in an additional step
-        after the main design, in order to make computation more efficient.
+    *   hub_2x2x2: 2 input and output ports with 2 wavelengths each.
 
 *   Fiber couplers:
     show that we can couple out-of-plane, to optical fiber modes.
@@ -68,6 +65,12 @@ Problems
     *   fds_lens: concentrate a single wavelength to a point in free-space,
         just like a lens.
         
+*   Flat-top devices:
+    show that we can engineer "flat-top" frequency response devices,
+    and that these have advantages in robustness.
+    *   top_wdm: wavelength splitter with top-hat response.
+        This should also demonstrate robustness to temperature and 
+        fabrication error.
 
 
 Problem specification
