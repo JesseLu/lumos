@@ -41,7 +41,8 @@ function [] = run_design_recipe(problem_name, recipe_name, varargin)
                                     'restart', use_restart);
                 break;
             catch exception
-                fprintf(getReport(exception, 'basic'));
+                fprintf(getReport(exception, 'extended'));
+                fprintf('\n');
                 use_restart = true;
                 continue;
             end
