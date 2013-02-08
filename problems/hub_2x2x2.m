@@ -1,4 +1,4 @@
-function [problem] = hub_2x2(custom_model_options)
+function [problem] = hub_2x2x2(custom_model_options)
 
     % Choose the structure of the model (what waveguides to use where).
     M = 2;
