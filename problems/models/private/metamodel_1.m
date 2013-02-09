@@ -12,7 +12,7 @@ function [mode, vis_layer] = metamodel_1(dims, omega, in, out, ...
     end
 
     if model_options.size == 'large'
-        size_boost = 100;
+        size_boost = 20;
         dims(1:2) = dims(1:2) + 2 * size_boost;
     elseif model_options.size == 'small'
         size_boost = 0;

@@ -10,11 +10,18 @@ function [wg] = build_io(ports, io)
 
         % NOTE: Distinguish input and output by the number of elements
         % in the power field of io.
+        dir = port.dir;
         switch length(io{k}.power)
             case 1 % Input
                 shift = port.J_shift;
             case 2 % Output
                 shift = port.E_shift;
+                % Need to flip the dir in this case.
+                if dir(2) == '+'
+                    dir(2) = '-';
+                else    
+                    dir(2) = '+';
+                end
             otherwise
                 error('Invalid power.');
         end
@@ -28,6 +35,6 @@ function [wg] = build_io(ports, io)
         wg(k) = struct( 'type', port.type, ...
                         'power', io{k}.power, ...
                         'pos', {pos}, ...
-                        'dir', port.dir, ...
+                        'dir', dir, ...
                         'mode_num', port.(io{k}.mode));
     end
