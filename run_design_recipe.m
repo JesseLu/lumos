@@ -4,7 +4,7 @@
 %% Description
 % Strings together multiple calls to lumos to get a design.
 
-function [] = run_design_recipe(problem_name, recipe_name, varargin)
+function run_design_recipe(problem_name, recipe_name, varargin)
 
     % Detect the 2D option.
     if ~isempty(strfind(problem_name, '2D'))
@@ -16,8 +16,8 @@ function [] = run_design_recipe(problem_name, recipe_name, varargin)
     end
 
 
+    % Function handle for generating the problem.
     gen_problem = eval(['@', exec_problem_name]);
-    problem = gen_problem({'flatten', flatten_option});
 
     % Set up the results directory for this recipe run.
     my_run_dir = [results_dir(), problem_name, '_', recipe_name, filesep];
@@ -27,7 +27,7 @@ function [] = run_design_recipe(problem_name, recipe_name, varargin)
     mkdir(my_run_dir);
 
 
-    function [p] = run_step(params, step_name)
+    function [p] = run_step(problem, params, step_name)
         my_step_name = [my_run_dir, 'step', step_name];
         fprintf('\nRunning step: %s\n', my_step_name);
         use_restart = false;
@@ -82,23 +82,46 @@ function [] = run_design_recipe(problem_name, recipe_name, varargin)
 
             p = options.p0;
 
+            problem = gen_problem({'flatten', flatten_option, ...
+                                    'S_type', 'alternate'});
+
             % Global optimization for 100 steps.
             if ~options.skip_A
-                p = run_step({'global', 'density', p, ...
+                p = run_step(problem, {'global', 'density', p, ...
                                 [options.num_iters, 1e-3]}, 'A');
             end
 
             % Local density optimization.
             if ~options.skip_B
-                p = run_step({'local', 'density', p, options.num_iters}, 'B');
+                p = run_step(problem, ...
+                            {'local', 'density', p, options.num_iters}, 'B');
             end
+
+            problem = gen_problem({'flatten', flatten_option, ...
+                                    'S_type', 'average'});
 
             % Switch to level-set.
             phi = switch_to_phi(p);
             for i = 1 : 5
-                phi = run_step({'local', 'level-set', reinit_phi(phi), ...
+                phi = run_step(problem, ...
+                                {'local', 'level-set', reinit_phi(phi), ...
                                 options.num_iters}, ['C', num2str(i)]);
             end
+
+        case 'verify'
+            options = struct();
+            % Parse optional parameters.
+            for k = 2 : 2 : length(varargin)
+                options = setfield(options, varargin{k-1}, varargin{k});
+            end
+
+            p = options.p0;
+
+            problem = gen_problem({'flatten', flatten_option, ...
+                                    'S_type', 'alternate', ...
+                                    'size', 'large'});
+
+            run_step(problem, {'local', 'density', p, 1}, 'V');
 
         otherwise
             error('Unkown recipe.');    

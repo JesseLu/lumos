@@ -12,12 +12,13 @@ function [mode, vis_layer] = metamodel_1(dims, omega, in, out, ...
     end
 
     if model_options.size == 'large'
-        size_boost = 10;
+        size_boost = 50;
         dims(1:2) = dims(1:2) + 2 * size_boost;
     elseif model_options.size == 'small'
         size_boost = 0;
     end
 
+    S_type = model_options.S_type;
 
     eps_lo = 2.25;
     eps_hi = 12.25;
@@ -62,8 +63,7 @@ function [mode, vis_layer] = metamodel_1(dims, omega, in, out, ...
     % Appropriate values of epsilon must be reset.
     design_pos = {border + [1 1] + size_boost, dims(1:2) - border - size_boost};
     design_area = design_pos{2} - design_pos{1} + 1;
-    % [S, epsilon] = planar_selection_matrix('average', epsilon, ...
-    [S, epsilon] = planar_selection_matrix('alternate', epsilon, ...
+    [S, epsilon] = planar_selection_matrix(S_type, epsilon, ...
                                     design_pos, ...
                                     reset_eps_val, z_center, z_thickness);
 
