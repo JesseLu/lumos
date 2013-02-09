@@ -54,9 +54,13 @@ function run_design_recipe(problem_name, recipe_name, varargin)
         phi = phi(:);
     end
 
-    function [phi] = reinit_phi(phi)
+    function [p] = my_phi2p(phi)
         phi = reshape(phi, problem.design_area);
         p = phi2p(phi, [0 1]);
+    end
+
+    function [phi] = reinit_phi(phi)
+        p = my_phi2p(phi);
         phi = switch_to_phi(p);
     end
         
@@ -72,6 +76,7 @@ function run_design_recipe(problem_name, recipe_name, varargin)
             options = struct(   'num_iters', 100, ...
                                 'skip_A', false, ...
                                 'skip_B', false, ...
+                                'num_C_steps', 5, ...
                                 'p0', 3/4);
 
             % Parse optional parameters.
@@ -101,11 +106,15 @@ function run_design_recipe(problem_name, recipe_name, varargin)
 
             % Switch to level-set.
             phi = switch_to_phi(p);
-            for i = 1 : 5
+            for i = 1 : options.num_C_steps 
                 phi = run_step(problem, ...
                                 {'local', 'level-set', reinit_phi(phi), ...
                                 options.num_iters}, ['C', num2str(i)]);
             end
+
+            % Run the verify step.
+            run_design_recipe(problem_name, 'verify', ...
+                                'p0', my_phi2p(phi));
 
         case 'verify'
             options = struct();
@@ -116,12 +125,34 @@ function run_design_recipe(problem_name, recipe_name, varargin)
 
             p = options.p0;
 
+            % Count the number of field objectives in the original problem.
+            ref_problem = gen_problem({'flatten', flatten_option, ...
+                                    'S_type', 'average', ...
+                                    'size', 'small'});
+            fobj = ref_problem.opt_prob.field_obj;
+            for i = 1 : length(fobj)
+                num_fobj(i) = size(fobj(i).C, 2);
+            end
+
+            % Run the enlarged problem.
             problem = gen_problem({'flatten', flatten_option, ...
                                     'S_type', 'average', ...
                                     'size', 'large'});
 
             run_step(problem, {'local', 'density', p, 1}, 'V');
 
+            % Get the results.
+            fprintf('\nVerification results:\n');
+            res = load([my_run_dir, 'stepV_state.mat']);
+            for i = 1 : length(res.progress.out_power)
+                fprintf('Mode %d: ', i);
+                num_redundant = length(res.progress.out_power{i}) / num_fobj(i);
+                for j = 1 : num_fobj(i)
+                    fprintf('%1.4f ', mean(res.progress.out_power{i}...
+                                    ((j-1)*num_redundant+1:j*num_redundant)));
+                end
+                fprintf('\n');
+            end
         otherwise
             error('Unkown recipe.');    
     end

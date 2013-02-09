@@ -4,7 +4,7 @@
 function [mode, vis_layer] = metamodel_1(dims, omega, in, out, ...
                                             wg_options, model_options)
 
-    border = 13;
+    border = 15;
 
     if model_options.flatten % Make 2D.
         dims(3) = 1;
@@ -13,10 +13,10 @@ function [mode, vis_layer] = metamodel_1(dims, omega, in, out, ...
 
     if model_options.size == 'large'
         size_boost = 20;
-        dims(1:2) = dims(1:2) + 2 * size_boost;
     elseif model_options.size == 'small'
         size_boost = 0;
     end
+    dims(1:2) = dims(1:2) + 2 * size_boost;
 
     S_type = model_options.S_type;
 
@@ -44,9 +44,9 @@ function [mode, vis_layer] = metamodel_1(dims, omega, in, out, ...
 
     for i = 1 : length(wg_options)
         if wg_options(i).dir == '+'
-            pos = [border-2, wg_options(i).ypos+size_boost, z_center];
+            pos = [1+pml_thickness(1), wg_options(i).ypos+size_boost, z_center];
         elseif wg_options(i).dir == '-'
-            pos = [dims(1)-border+3, wg_options(i).ypos+size_boost, z_center];
+            pos = [dims(1)-pml_thickness(1)-1, wg_options(i).ypos+size_boost, z_center];
         else
             error('Unknown waveguide direction option');
         end
@@ -79,6 +79,11 @@ function [mode, vis_layer] = metamodel_1(dims, omega, in, out, ...
                     'S', (eps_hi - eps_lo) * S, ...
                     'design_area', design_area);
 
+    if model_options.size == 'large'
+        % Add redundant out calculations.
+        mode.out = build_io(ports, out, size_boost + 1);
+    end
+
 
     %% Determine the visualization condition.
     if strcmp(in.mode(1:2), 'te')
@@ -86,7 +91,7 @@ function [mode, vis_layer] = metamodel_1(dims, omega, in, out, ...
     elseif strcmp(in.mode(1:2), 'tm')
         vis_component = 3; % Look at Ez.
     else
-        error('Could not determinte visualization component.');
+        error('Could not determine visualization component.');
     end
 
     vis_layer = struct( 'component', vis_component, ...

@@ -1,7 +1,14 @@
-function [wg] = build_io(ports, io)
+function [wg] = build_io(ports, io, varargin)
 
     if ~iscell(io)
         io = {io};
+    end
+
+    if ~isempty(varargin)
+        make_redundant = true;
+        redundancy_num = varargin{1};
+    else
+        make_redundant = false;
     end
 
     % Allow for a simple way to specify a waveguide mode.
@@ -32,9 +39,28 @@ function [wg] = build_io(ports, io)
         end
 
         % Build the waveguide spec.
-        wg(k) = struct( 'type', port.type, ...
-                        'power', io{k}.power, ...
-                        'pos', {pos}, ...
-                        'dir', dir, ...
-                        'mode_num', port.(io{k}.mode));
+        if ~make_redundant
+            wg(k) = struct( 'type', port.type, ...
+                            'power', io{k}.power, ...
+                            'pos', {pos}, ...
+                            'dir', dir, ...
+                            'mode_num', port.(io{k}.mode));
+        else
+            % Used to get an average power output.
+            for i = 1 : redundancy_num
+                prop_dir = find(dir(1) == 'xyz');
+                red_shift = +1 * (dir(2) == '-') + ...
+                            -1 * (dir(2) == '+');
+
+                red_pos = pos;
+                red_pos{1}(prop_dir) = red_pos{1}(prop_dir) + (i-1) * red_shift;
+                red_pos{2}(prop_dir) = red_pos{2}(prop_dir) + (i-1) * red_shift;
+                wg((k-1)*redundancy_num + i) = ...
+                    struct( 'type', port.type, ...
+                            'power', io{k}.power, ...
+                            'pos', {red_pos}, ...
+                            'dir', dir, ...
+                            'mode_num', port.(io{k}.mode));
+            end
+        end
     end
