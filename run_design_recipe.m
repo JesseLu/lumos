@@ -113,8 +113,8 @@ function run_design_recipe(problem_name, recipe_name, varargin)
             end
 
             % Run the verify step.
-            run_design_recipe(problem_name, 'verify', ...
-                                'p0', my_phi2p(phi));
+            p = my_phi2p(phi);
+            run_design_recipe(problem_name, 'verify', 'p0', p(:));
 
         case 'verify'
             options = struct();
@@ -148,8 +148,12 @@ function run_design_recipe(problem_name, recipe_name, varargin)
                 fprintf('Mode %d: ', i);
                 num_redundant = length(res.progress.out_power{i}) / num_fobj(i);
                 for j = 1 : num_fobj(i)
-                    fprintf('%1.4f ', mean(res.progress.out_power{i}...
-                                    ((j-1)*num_redundant+1:j*num_redundant)));
+                    data = res.progress.out_power{i}...
+                                    ((j-1)*num_redundant+1:j*num_redundant);
+                    fprintf('%1.4f (%1.4f)', mean(data), std(data));
+                    if j ~= num_fobj(i)
+                        fprintf(', ');
+                    end
                 end
                 fprintf('\n');
             end
