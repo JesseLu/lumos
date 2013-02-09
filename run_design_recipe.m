@@ -15,7 +15,6 @@ function run_design_recipe(problem_name, recipe_name, varargin)
         exec_problem_name = problem_name;
     end
 
-
     % Function handle for generating the problem.
     gen_problem = eval(['@', exec_problem_name]);
 
@@ -83,7 +82,7 @@ function run_design_recipe(problem_name, recipe_name, varargin)
             p = options.p0;
 
             problem = gen_problem({'flatten', flatten_option, ...
-                                    'S_type', 'alternate'});
+                                    'S_type', 'average'});
 
             % Global optimization for 100 steps.
             if ~options.skip_A
@@ -118,7 +117,7 @@ function run_design_recipe(problem_name, recipe_name, varargin)
             p = options.p0;
 
             problem = gen_problem({'flatten', flatten_option, ...
-                                    'S_type', 'alternate', ...
+                                    'S_type', 'average', ...
                                     'size', 'large'});
 
             run_step(problem, {'local', 'density', p, 1}, 'V');
