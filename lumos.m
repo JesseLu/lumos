@@ -71,6 +71,13 @@ function [z, p, vis_result] = lumos(name, problem, paradigm, param_type, ...
 
         options.structure_args = {  'step_err', 1e-4, ...
                                     'err_thresh', 1e-3};
+
+    elseif strcmp(paradigm, 'local-no-move') % A no-op.
+        options.paradigm = 'local';
+        options.paradigm_args = {'initial_kappa', 0};
+
+        options.structure_args = {  'step_err', 1e4, ...
+                                    'err_thresh', 1e3};
     else
         error('Invalid paradigm.');
     end

@@ -30,10 +30,10 @@ function run_design_recipe(problem_name, recipe_name, varargin)
         my_step_name = [my_run_dir, 'step', step_name];
         fprintf('\nRunning step: %s\n', my_step_name);
         use_restart = false;
-%         % For no error override.
-%         [z, p, vis] = lumos(my_step_name, problem, params{:}, ...
-%                             'restart', use_restart);
-%         return 
+        % For no error override.
+        [z, p, vis] = lumos(my_step_name, problem, params{:}, ...
+                            'restart', use_restart);
+        return 
         while true
             try
                 [z, p, vis] = lumos(my_step_name, problem, params{:}, ...
@@ -86,23 +86,37 @@ function run_design_recipe(problem_name, recipe_name, varargin)
 
             p = options.p0;
 
-            problem = gen_problem({'flatten', flatten_option, ...
-                                    'S_type', 'average'});
+            if flatten_option
+                init_S_type = 'isolate';
+            else
+                init_S_type = 'alternate';
+            end
 
             % Global optimization for 100 steps.
             if ~options.skip_A
+                % Construct diagonalized problem for step A.
+                problem = gen_problem({'flatten', flatten_option, ...
+                                        'S_type', init_S_type});
+
                 p = run_step(problem, {'global', 'density', p, ...
                                 [options.num_iters, 1e-3]}, 'A');
             end
 
             % Local density optimization.
             if ~options.skip_B
+                % Construct diagonalized problem for step B.
+                problem = gen_problem({'flatten', flatten_option, ...
+                                        'S_type', init_S_type, ...
+                                        'size', 'large'});
+
                 p = run_step(problem, ...
                             {'local', 'density', p, options.num_iters}, 'B');
             end
 
+            % Non-diagonal problem for step C and on.
             problem = gen_problem({'flatten', flatten_option, ...
-                                    'S_type', 'average'});
+                                    'S_type', 'average', ...
+                                    'size', 'large'});
 
             % Switch to level-set.
             phi = switch_to_phi(p);
@@ -129,9 +143,10 @@ function run_design_recipe(problem_name, recipe_name, varargin)
             ref_problem = gen_problem({'flatten', flatten_option, ...
                                     'S_type', 'average', ...
                                     'size', 'small'});
-            fobj = ref_problem.opt_prob.field_obj;
-            for i = 1 : length(fobj)
-                num_fobj(i) = size(fobj(i).C, 2);
+
+            for i = 1 : length(ref_problem.opt_prob)
+                fobj = ref_problem.opt_prob(i).field_obj;
+                num_fobj(i) = size(fobj.C, 2);
             end
 
             % Run the enlarged problem.
@@ -139,7 +154,7 @@ function run_design_recipe(problem_name, recipe_name, varargin)
                                     'S_type', 'average', ...
                                     'size', 'large'});
 
-            run_step(problem, {'local', 'density', p, 1}, 'V');
+            run_step(problem, {'local-no-move', 'density', p, 1}, 'V');
 
             % Get the results.
             fprintf('\nVerification results:\n');
