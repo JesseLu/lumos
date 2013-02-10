@@ -8,10 +8,10 @@ function [mode, vis_layer] = model_V2(omega, in, out, wg_types, options)
 % At the same time, make the in and out fields easier to specify.
 
     % Basic dimensions.
-    dims = [120 135 40];
+    dims = [120 145 40];
 
     wg_dirs = {'+', '-', '-', '-', '-'};
-    wg_ypos = {dims(2)/2, 27, 54, 81, 108};
+    wg_ypos = {dims(2)/2, 32, 59, 86, 113};
 
     for i = 1 : length(wg_types)
         wg_options(i) = struct( 'type', wg_types{i}, ...

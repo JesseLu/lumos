@@ -107,7 +107,7 @@ function run_design_recipe(problem_name, recipe_name, varargin)
                 % Construct diagonalized problem for step B.
                 problem = gen_problem({'flatten', flatten_option, ...
                                         'S_type', init_S_type, ...
-                                        'size', 'large'});
+                                        'size', 'small'});
 
                 p = run_step(problem, ...
                             {'local', 'density', p, options.num_iters}, 'B');
@@ -116,7 +116,7 @@ function run_design_recipe(problem_name, recipe_name, varargin)
             % Non-diagonal problem for step C and on.
             problem = gen_problem({'flatten', flatten_option, ...
                                     'S_type', 'average', ...
-                                    'size', 'large'});
+                                    'size', 'small'});
 
             % Switch to level-set.
             phi = switch_to_phi(p);

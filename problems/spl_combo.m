@@ -1,5 +1,5 @@
 
-function [problem] = spl_wdm(custom_model_options)
+function [problem] = spl_combo(custom_model_options)
 
     % Choose the structure of the model (what waveguides to use where).
     model_structure = {'double', 'single', 'single', 'single', 'single'};
@@ -13,7 +13,7 @@ function [problem] = spl_wdm(custom_model_options)
                 out{i} = io(i+1, 'te0', [0 0.01]);
             end
         end
-        % out = out{port_num}; % Don't use reject bands.
+        out = out{port_num}; % Don't use reject bands.
     end
 
     N = 4; % Number of modes.
