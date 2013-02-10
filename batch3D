@@ -1,0 +1,9 @@
+#! /bin/sh
+# Accept the prefix argument to select different problems. 
+
+if [ $# -eq 0 ]
+then
+    ./batch_run '' '' r1
+else
+    ./batch_run $1 ''  r1
+fi
