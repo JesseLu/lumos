@@ -15,9 +15,9 @@ do
 
     # Launch the screen sessions.
     echo Launching $session_name...
-#     screen -S $session_name -md matlab -nosplash -nodesktop -r \
-#             "setup_lumos; run_design_recipe('$problem_name', '$recipe_name')"
-#     sleep 3
+    screen -S $session_name -md matlab -nosplash -nodesktop -r \
+            "setup_lumos; run_design_recipe('$problem_name', '$recipe_name')"
+    sleep 3
 done
 
 
