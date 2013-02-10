@@ -2,7 +2,7 @@ function [problem] = hub_4x4(custom_model_options)
 
     % Choose the structure of the model (what waveguides to use where).
     M = 4;
-    out_ports = M + [3 2 4 1];
+    out_ports = [3 2 4 1];
 
     model_structure = metahub(M);
 
@@ -17,9 +17,9 @@ function [problem] = hub_4x4(custom_model_options)
         out_port = out_ports(i);
         for j = 1 : M
             if j == out_port
-                power = [0.9, 1];
+                power = [0.9, 1]; % Pass.
             else
-                power = [0, 0.01];
+                power = [0, 0.01]; % Reject.
             end
             out{i}{j} = io(M+j, 'te0', power);
         end
