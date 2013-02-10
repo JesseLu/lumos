@@ -1,0 +1,3 @@
+#! /bin/sh
+
+./batch_run '' r1
