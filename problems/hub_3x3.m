@@ -12,11 +12,10 @@ function [problem] = hub_3x3(custom_model_options)
 
     std_omega = 2 * pi / 38.75;
 
-    % for i = 1 : M
-    for i = 1 : 1
+    for i = 1 : M
         omega{i} = std_omega;
         in{i} = io(i, 'te0', 1);
-        out_port = mod(i*(spinner) - 1 + offset, M) + 1
+        out_port = mod(i*(spinner) - 1 + offset, M) + 1;
         for j = 1 : M
             if j == out_port
                 power = [0.9, 1];
