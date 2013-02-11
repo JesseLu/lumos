@@ -1,7 +1,7 @@
 %% model_L
 % 1 port above (fiber) and M ports on the right.
 
-function [mode, vis_layer] = model_H(omega, in, out, wg_types, options)
+function [mode, vis_layer] = model_L(omega, in, out, wg_types, options)
 
 %% Output parameters
 % Fills in everything for mode structures, except for the in and out fields.
@@ -12,8 +12,15 @@ function [mode, vis_layer] = model_H(omega, in, out, wg_types, options)
     wg_spacer = 25;
 
     % Basic dimensions.
-    sim_length = wg_spacer * (M + 1) + 10;
-    dims = [120 sim_length+10 40];
+    min_sim_len = 120;
+    sim_length = max([min_sim_len, (wg_spacer * (M + 1) + 10+10)]);
+    dims = [min_sim_len sim_length 40];
+
+    if options.flatten
+        dims(2) = 1;
+        sim_length = 1;
+        wg_spacer = 0;
+    end
 
     
     for i = 1 : M

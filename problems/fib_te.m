@@ -1,7 +1,7 @@
 function [problem] = fib_te(custom_model_options)
 
     % Choose the structure of the model (what waveguides to use where).
-    model_structure = {'single', 'double'};
+    model_structure = {'single'};
 
     N = 1; % Number of modes.
 

@@ -7,17 +7,17 @@ function [mode, vis_layer] = metamodel_2(dims, omega, in, out, ...
     border = 15;
     pml_thickness = [10 10 10];
 
-    if model_options.flatten % Make 2D.
-        dims(2) = 1;
-        pml_thickness(2) = 0;
-    end
-
     if model_options.size == 'large'
         size_boost = 20;
     elseif model_options.size == 'small'
         size_boost = 0;
     end
     dims = dims + 2 * size_boost;
+
+    if model_options.flatten % Make 2D.
+        dims(2) = 1;
+        pml_thickness(2) = 0;
+    end
 
     S_type = model_options.S_type;
 
@@ -29,8 +29,8 @@ function [mode, vis_layer] = metamodel_2(dims, omega, in, out, ...
 
     fiber_radius = 25;
     fiber_eps = 2.56;
-    fiber_z_center = dims(3)/4;
-    fiber_z_thickness = dims(3)/2;
+    fiber_z_center = 3*dims(3)/4;
+    fiber_z_thickness = dims(3)/2 + 2;
 
 
     mu = {ones(dims), ones(dims), ones(dims)};
@@ -59,11 +59,12 @@ function [mode, vis_layer] = metamodel_2(dims, omega, in, out, ...
     epsilon = add_planar(epsilon, fiber_z_center, fiber_z_thickness, ...
                         {background, fiber{:}});
 
+
     fiber_port = struct('type', 'wgmode', ...
-                        'dir', 'z+', ...
+                        'dir', 'z-', ...
                         'ypol', 1, ...
                         'xpol', 2, ...
-                        'pos', {{[1 1 11], [dims(1) dims(2) 11]}}, ...
+                        'pos', {{[1 1 dims(3)-11], [dims(1) dims(2) dims(3)-11]}}, ...
                         'J_shift', [0 0 0], ...
                         'E_shift', [0 0 -1]);
 
@@ -83,6 +84,14 @@ function [mode, vis_layer] = metamodel_2(dims, omega, in, out, ...
                                 ['x', wg_options(i).dir], dims(1)-border, pos);
     end
     epsilon = add_planar(epsilon, z_center, z_thickness, {background, wg{:}});
+
+%     for k = 1 : 3
+%         subplot(3, 1, k);
+%         imagesc(abs(squeeze(epsilon{k}(:,:,:)))'); 
+%         axis equal tight;
+%         colorbar;
+%     end
+%     pause
 
     % Add in the first port, which is the fiber.
     ports = {fiber_port, ports{:}};
@@ -128,7 +137,13 @@ function [mode, vis_layer] = metamodel_2(dims, omega, in, out, ...
         error('Could not determine visualization component.');
     end
 
-    vis_layer = struct( 'component', vis_component, ...
-                        'slice_dir', 'z', ...
-                        'slice_index', round(dims(3)/2));
+    if model_options.flatten
+        vis_layer = struct( 'component', vis_component, ...
+                            'slice_dir', 'y', ...
+                            'slice_index', 1);
+    else
+        vis_layer = struct( 'component', vis_component, ...
+                            'slice_dir', 'z', ...
+                            'slice_index', round(dims(3)/2));
+    end
    
