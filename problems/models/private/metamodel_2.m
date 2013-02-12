@@ -12,7 +12,7 @@ function [mode, vis_layer] = metamodel_2(dims, omega, in, out, ...
     elseif model_options.size == 'small'
         size_boost = 0;
     end
-    dims = dims + 2 * size_boost;
+    dims([1, 3]) = dims([1, 3]) + 2 * size_boost;
 
     if model_options.flatten % Make 2D.
         dims(2) = 1;
@@ -31,6 +31,9 @@ function [mode, vis_layer] = metamodel_2(dims, omega, in, out, ...
     fiber_eps = 2.56;
     fiber_z_center = 3*dims(3)/4;
     fiber_z_thickness = dims(3)/2 + 2;
+
+    sel_z_thickness = z_thickness/2;
+    sel_z_center = z_center + z_thickness/2 - sel_z_thickness/2;
 
 
     mu = {ones(dims), ones(dims), ones(dims)};
@@ -73,9 +76,9 @@ function [mode, vis_layer] = metamodel_2(dims, omega, in, out, ...
     % Construct in-plane waveguides and modes.
     for i = 1 : length(wg_options)
         if wg_options(i).dir == '+'
-            pos = [1+pml_thickness(1), wg_options(i).ypos+size_boost, z_center];
+            pos = [1+pml_thickness(1), wg_options(i).ypos, z_center];
         elseif wg_options(i).dir == '-'
-            pos = [dims(1)-pml_thickness(1)-1, wg_options(i).ypos+size_boost, z_center];
+            pos = [dims(1)-pml_thickness(1)-1, wg_options(i).ypos, z_center];
         else
             error('Unknown waveguide direction option');
         end
@@ -83,7 +86,17 @@ function [mode, vis_layer] = metamodel_2(dims, omega, in, out, ...
         [wg{i}, ports{i}] = wg_lores(epsilon, wg_options(i).type, ...
                                 ['x', wg_options(i).dir], dims(1)-border, pos);
     end
-    epsilon = add_planar(epsilon, z_center, z_thickness, {background, wg{:}});
+    % Need to know design pos for half-etched structure.
+    design_pos = {border + [1 1] + size_boost * [1 0], dims(1:2) - border - size_boost * [1 0]};
+    bottom = struct('type', 'rectangle', ...
+                    'position', [0 0], ...
+                    'size', design_pos{2} - design_pos{1} + 1, ...
+                    'permittivity', eps_hi);
+    if bottom.size(2) < 1
+        bottom.size(2) = 1;
+    end
+
+    epsilon = add_planar(epsilon, z_center, z_thickness, {background, wg{:}, bottom});
 
 %     for k = 1 : 3
 %         subplot(3, 1, k);
@@ -99,16 +112,28 @@ function [mode, vis_layer] = metamodel_2(dims, omega, in, out, ...
 
     %% Build the selection matrix
     % Appropriate values of epsilon must be reset.
-    design_pos = {border + [1 1] + size_boost, dims(1:2) - border - size_boost};
     design_area = design_pos{2} - design_pos{1} + 1;
     if design_area(2) < 1 % Correction for y-flattened types.
         design_area(2) = 1;
         design_pos{1}(2) = 1;
         design_pos{2}(2) = 1;
     end
+
+    epsilon_orig = epsilon;
     [S, epsilon] = planar_selection_matrix(S_type, epsilon, ...
                                     design_pos, ...
-                                    reset_eps_val, z_center, z_thickness);
+                                    reset_eps_val, sel_z_center, sel_z_thickness);
+
+    % Fancy fix.
+    % Gets rid of intermediate layer values for the assymetric structure.
+    n = prod(dims);
+    vec = @(f) [f{1}(:); f{2}(:); f{3}(:)];
+    unvec = @(v) {reshape(full(v(1:n)), dims), ...
+                    reshape(full(v(n+1:2*n)), dims), ...
+                    reshape(full(v(2*n+1:3*n)), dims)};
+    delta_epsilon = vec(epsilon_orig) - ...
+                    (vec(epsilon) + (eps_hi - eps_lo) * S * ones(size(S,2), 1));
+    epsilon = unvec(vec(epsilon) + abs(delta_epsilon));
 
 
     %% Specify modes
