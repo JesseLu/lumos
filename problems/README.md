@@ -50,8 +50,8 @@ Problems
 *   Free-space devices:
     show that we can also do non-nanophotonic devices.
     Make sure that the degeneracy is split here as well.
-    *   fsd_rotlin: Rotate linear polarization by 90 degrees in transmission.
-    *   fsd_rotcirc: Rotate polarization from linear to circular.
+    *   fsd_mirror: Reflect a mode.
+    *   fsd_rotate: Rotate linear polarization by 90 degrees in transmission.
     *   fsd_filter: Allow one wavelength to pass while reflecting a second.
         
 *   Flat-top devices:
