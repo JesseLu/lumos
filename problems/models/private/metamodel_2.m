@@ -8,7 +8,7 @@ function [mode, vis_layer] = metamodel_2(dims, omega, in, out, ...
     pml_thickness = [10 10 10];
 
     if model_options.size == 'large'
-        size_boost = 0;
+        size_boost = 20;
     elseif model_options.size == 'small'
         size_boost = 0;
     end
@@ -83,16 +83,18 @@ function [mode, vis_layer] = metamodel_2(dims, omega, in, out, ...
     % Construct in-plane waveguides and modes.
     for i = 1 : length(wg_options)
         if wg_options(i).dir == '+'
-            pos = [1+pml_thickness(1), wg_options(i).ypos, z_center];
+            pos = [2+pml_thickness(1), wg_options(i).ypos, z_center];
         elseif wg_options(i).dir == '-'
-            pos = [dims(1)-pml_thickness(1)-1, wg_options(i).ypos, z_center];
+            pos = [dims(1)-pml_thickness(1)-2, wg_options(i).ypos, z_center];
         else
             error('Unknown waveguide direction option');
         end
 
+        pos(3) = pos(3) + 3; % Move away from mirror.
         [wg{i}, ports{i}] = wg_lores(epsilon, wg_options(i).type, ...
                                 ['x', wg_options(i).dir], dims(1)-border, pos);
     end
+
     % Need to know design pos for half-etched structure.
     design_pos = {border + [1 1] + size_boost * [1 0], dims(1:2) - border - size_boost * [1 0]};
     bottom = struct('type', 'rectangle', ...
