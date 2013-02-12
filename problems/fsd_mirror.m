@@ -6,9 +6,21 @@ function [problem] = fsd_mirror(custom_model_options)
 
     omega{1} = 2 * pi / 38.75;
     in{1} = io(1, 'ypol', 1);
-    out{1} = {io(1, 'ypol', [0.9 1]), ...
-            io(2, 'ypol', [0 0.01])};
 
+    
+    out_port = 1;
+    out_mode = 1;
+    M = 6; % Needs to be 10 for 3D.
+    for p = 1 : 2
+        for i = 1 : M 
+            ind = (p-1) * M + i;
+            if (p == out_port) && (i == out_mode)
+                out{1}{ind} = io(p, i, [0.9 1]);
+            else
+                out{1}{ind} = io(p, i, [0 0.1]);
+            end
+        end
+    end
     vis_options.mode_sel = 1 : N;
 
     % Build the problem.
