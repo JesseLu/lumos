@@ -95,17 +95,16 @@ function [mode, vis_layer] = metamodel_2(dims, omega, in, out, ...
                                 ['x', wg_options(i).dir], dims(1)-border, pos);
     end
 
-    % Need to know design pos for half-etched structure.
-    design_pos = {border + [1 1] + size_boost * [1 0], dims(1:2) - border - size_boost * [1 0]};
-    bottom = struct('type', 'rectangle', ...
-                    'position', [0 0], ...
-                    'size', design_pos{2} - design_pos{1} + 1, ...
-                    'permittivity', eps_hi);
-    if bottom.size(2) < 1
-        bottom.size(2) = 1;
-    end
+%     % Need to know design pos for half-etched structure.
+%     bottom = struct('type', 'rectangle', ...
+%                     'position', [0 0], ...
+%                     'size', design_pos{2} - design_pos{1} + 1, ...
+%                     'permittivity', eps_hi);
+%     if bottom.size(2) < 1
+%         bottom.size(2) = 1;
+%     end
 
-    epsilon = add_planar(epsilon, z_center, z_thickness, {background, wg{:}, bottom});
+    epsilon = add_planar(epsilon, z_center, z_thickness, {background, wg{:}});
 
 %     for k = 1 : 3
 %         subplot(2, 3, k);
@@ -123,6 +122,7 @@ function [mode, vis_layer] = metamodel_2(dims, omega, in, out, ...
 
     %% Build the selection matrix
     % Appropriate values of epsilon must be reset.
+    design_pos = {border + [1 1] + size_boost * [1 0], dims(1:2) - border - size_boost * [1 0]};
     design_area = design_pos{2} - design_pos{1} + 1;
     if design_area(2) < 1 % Correction for y-flattened types.
         design_area(2) = 1;
