@@ -4,7 +4,7 @@ function [problem] = fsd_mirror(custom_model_options)
 
     N = 1; % Number of modes.
 
-    omega{1} = 2 * pi / 38.75;
+    omega{1} = 2 * pi / (2*38.75);
     in{1} = io(1, 'ypol', 1);
 
     
@@ -21,6 +21,7 @@ function [problem] = fsd_mirror(custom_model_options)
             end
         end
     end
+    out{1} = out{1}{1};
     vis_options.mode_sel = 1 : N;
 
     % Build the problem.

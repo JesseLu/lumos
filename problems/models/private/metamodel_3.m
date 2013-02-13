@@ -18,7 +18,8 @@ function [mode, vis_layer] = metamodel_2(dims, omega, in, out, model_options)
         pml_thickness(2) = 0;
     end
 
-    S_type = model_options.S_type;
+    % Add no-clipping.
+    S_type = [model_options.S_type, '-noclipping'];
 
     eps_lo = 2.25;
     eps_hi = 12.25;
@@ -50,7 +51,7 @@ function [mode, vis_layer] = metamodel_2(dims, omega, in, out, model_options)
     epsilon = add_planar(epsilon, 1, 1e9, {background, deg_breaker});
 
 
-    zpos = [dims(3)-pml_thickness(3)-3, pml_thickness(3)+3] + ...
+    zpos = [dims(3)-pml_thickness(3)-2, pml_thickness(3)+2] + ...
             size_boost * [-1 1];
     ports = {struct('type', 'wgmode', ...
                     'dir', 'z-', ...
