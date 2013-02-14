@@ -1,7 +1,14 @@
 %% visualize_design_run
 % Create plots and images to visualize how a design run proceeded
 
-function visualize_design_run(problem_name, recipe_name)
+% name is the name of the results directory.
+function visualize_design_run(name)
+
+    % Separate into problem and recipe names.
+    ind = strfind(name, '_');
+    ind = ind(end);
+    problem_name = name(1:ind-1);
+    recipe_name = name(ind+1:end);
 
     % Detect the 2D option.
     if ~isempty(strfind(problem_name, '2D'))
@@ -60,7 +67,7 @@ function visualize_design_run(problem_name, recipe_name)
         modes = verification_layer(problem.opt_prob, data.z, data.state.x);
 
         % Plot epsilon and field data.
-        my_vis_step(step_name, modes);
+        my_vis_state(vis_dir, step_name, modes);
     end
 
 %     %% Plot the history data.
@@ -114,6 +121,42 @@ function visualize_design_run(problem_name, recipe_name)
 % 
 %     end
 
+end
+
+function my_vis_state(dir, step_name, modes)
+
+    my_shot = @(data, comp, func, slice, map, lims) ...
+                struct('data', data, 'comp', comp, 'func', func, ...
+                    'slice', slice, 'map', colormap(map), 'lims', lims);
+
+    shots = {my_shot('E', 2, 'abs', 'z', 'hot', []), ...
+            my_shot('E', 3, 'abs', 'z', 'hot', []), ...
+            my_shot('epsilon', 3, 'abs', 'z', 'bone', [2.25 12.25])};
+
+    xyz = 'xyz';
+
+    image_names = @(dset, comp) [vis_dir, dset, '_', xyz(comp), '_', step_name];
+    for i = 1 : length(modes) 
+        mode = modes(i);
+        for j = 1 : length(shots)
+            s = shots{j};
+            func = eval(['@', s.func]);
+            data = func(mode.(s.data){s.comp});
+            ind = round(size(data)/2);
+            switch s.slice
+                case 'x'
+                    data = data(ind(1),:,:);
+                case 'y'
+                    data = data(:,ind(2),:);
+                case 'z'
+                    data = data(:,:,ind(3));
+            end
+
+            image_name = [dir, s.data, xyz(s.comp), s.func, s.slice, ...
+                            '_', step_name];
+            my_saveimage(squeeze(data), s.map, s.lims, image_name);
+        end
+    end
 end
 
 function my_saveimage(z, map, lims, filename)
