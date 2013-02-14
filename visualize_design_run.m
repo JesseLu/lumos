@@ -22,8 +22,10 @@ function visualize_design_run(name)
     % Detect the 'verify' recipe
     if strcmp(recipe_name, 'verify')
         problem_size = 'large';
+        clip = 13;
     else
         problem_size = 'small';
+        clip = 0;
     end
 
 
@@ -67,7 +69,7 @@ function visualize_design_run(name)
         modes = verification_layer(problem.opt_prob, data.z, data.state.x);
 
         % Plot epsilon and field data.
-        my_vis_state(vis_dir, step_name, modes);
+        my_vis_state(vis_dir, step_name, modes, clip);
     end
 
 %     %% Plot the history data.
@@ -123,7 +125,7 @@ function visualize_design_run(name)
 
 end
 
-function my_vis_state(dir, step_name, modes)
+function my_vis_state(dir, step_name, modes, clip)
 
     my_shot = @(data, comp, func, slice, map, lims) ...
                 struct('data', data, 'comp', comp, 'func', func, ...
@@ -155,13 +157,20 @@ function my_vis_state(dir, step_name, modes)
 
             image_name = [dir, s.data, num2str(i), xyz(s.comp), ...
                             s.func, s.slice, '_', step_name];
-            my_saveimage(squeeze(data), s.map, s.lims, image_name);
+            my_saveimage(squeeze(data), s.map, s.lims, image_name, clip);
         end
     end
 end
 
-function my_saveimage(z, map, lims, filename)
+function my_saveimage(z, map, lims, filename, varargin)
 % Write out a mapped image.
+
+    if ~isempty(varargin)
+        clip = varargin{1};
+        dims = size(z);
+        z = z(1+clip:dims(1)-clip, 1+clip:dims(2)-clip);
+    end
+
     if isempty(lims)
         if all(z >= 0)
             lims = max(abs(z(:))) * [0 1];
