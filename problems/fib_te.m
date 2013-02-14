@@ -7,7 +7,7 @@ function [problem] = fib_te(custom_model_options)
 
     omega{1} = 2 * pi / 38.75;
     in{1} = io(1, 'ypol', 1);
-    out{1} = io(2, 'te0', [0.9 1]);
+    out{1} = io(2, 'te0', [0.7 1]);
 
     vis_options.mode_sel = 1 : N;
 
