@@ -16,7 +16,11 @@
 
 function [waveguide, port] = wg_lores(epsilon, type, dir, len, pos)
 
-    if length(size(squeeze(epsilon{1}))) == 2
+    eps_dims = size(epsilon{1});
+    if ndims(epsilon{1}) == 2 
+        flatten = true;
+        dims = [size(squeeze(epsilon{1})), 1];
+    elseif eps_dims(3) == 1
         flatten = true;
         dims = [size(squeeze(epsilon{1})), 1];
     else 

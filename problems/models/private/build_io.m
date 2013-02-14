@@ -39,12 +39,20 @@ function [wg] = build_io(ports, io, varargin)
         end
 
         % Build the waveguide spec.
+        if ischar(io{k}.mode)
+            mode_num = port.(io{k}.mode);
+        elseif isnumeric(io{k}.mode)
+            mode_num = io{k}.mode;
+        else
+            error('Invalid mode designation');
+        end
+
         if ~make_redundant
             wg(k) = struct( 'type', port.type, ...
                             'power', io{k}.power, ...
                             'pos', {pos}, ...
                             'dir', dir, ...
-                            'mode_num', port.(io{k}.mode));
+                            'mode_num', mode_num);
         else
             % Used to get an average power output.
             for i = 1 : redundancy_num
