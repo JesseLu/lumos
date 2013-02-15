@@ -124,7 +124,6 @@ function visualize_design_run(name)
 %         end
 % 
 %     end
-
 end
 
 function my_vis_state(dir, step_name, modes, clip)
