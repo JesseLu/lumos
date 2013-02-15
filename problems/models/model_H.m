@@ -12,8 +12,8 @@ function [mode, vis_layer] = model_H(omega, in, out, wg_types, options)
     wg_spacer = 25;
 
     % Basic dimensions.
-    sim_length = wg_spacer * (M + 1) + 10;
-    dims = [sim_length+20 sim_length+10 40];
+    sim_length = wg_spacer * (M + 1) + 20;
+    dims = [sim_length+10 sim_length 40];
 
     
     for i = 1 : M
