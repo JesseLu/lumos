@@ -46,84 +46,84 @@ function visualize_design_run(name)
 
     state_files = dir([run_dir, '*_state.mat']);
     history_files = dir([run_dir, '*_history.h5']);
-% 
-%     %% Plot data from state file.
-% 
-%     % Get the "verify" type problem.
-%     problem = gen_problem({'flatten', flatten_option, ...
-%                             'S_type', 'average', ...
-%                             'size', problem_size});
-% 
-%     for f = {state_files.name}
-%         % Progress data.
-%         data = load([run_dir, f{1}], 'progress');
-%         progress = data.progress;
-%         step_name = strrep(f{1}, '_state.mat', '');
-%         my_saveplot(@semilogy, progress.res_norm, 'physics residual', ...
-%                     [vis_dir, 'res_', step_name]);
-%         my_saveplot(@plot, progress.out_power, 'output powers', ...
-%                     [vis_dir, 'pow_', step_name], [0 1]);
-% 
-%         % Run verification layer to get epsilon and E.
-%         data = load([run_dir, f{1}], 'z', 'state');
-%         modes = verification_layer(problem.opt_prob, data.z, data.state.x);
-% 
-%         % Plot epsilon and field data.
-%         my_vis_state(vis_dir, step_name, modes, clip);
-%     end
-% 
-    %% Plot the history data.
-    a=1
-    dataset_names = {   @(mode_num) ['/E', num2str(mode_num), '_abs'], ...
-                        @(mode_num) ['/E', num2str(mode_num), '_real'], ...
-                        @(mode_num) ['/E', num2str(mode_num), '_imag'], ...
-                        @(mode_num) ['/eps', num2str(mode_num), '_abs']};
 
-    map = { colormap('hot'), ...
-            colormap('jet'), ...
-            colormap('jet'), ...
-            flipud(colormap('bone'))};
+    %% Plot data from state file.
 
-    lims = {[], [], [], [2.25 12.25]};
+    % Get the "verify" type problem.
+    problem = gen_problem({'flatten', flatten_option, ...
+                            'S_type', 'average', ...
+                            'size', problem_size});
 
-    xyz = 'xyz';
+    for f = {state_files.name}
+        % Progress data.
+        data = load([run_dir, f{1}], 'progress');
+        progress = data.progress;
+        step_name = strrep(f{1}, '_state.mat', '');
+        my_saveplot(@semilogy, progress.res_norm, 'physics residual', ...
+                    [vis_dir, 'res_', step_name]);
+        my_saveplot(@plot, progress.out_power, 'output powers', ...
+                    [vis_dir, 'pow_', step_name], [0 1]);
 
-    image_names = @(file, dset, comp, iter) ...
-                        [vis_dir, dset, '_', xyz(comp), '_', ...
-                        strrep(file, '_history.h5', ''),  ...
-                        '_', sprintf('%03d', iter)];
+        % Run verification layer to get epsilon and E.
+        data = load([run_dir, f{1}], 'z', 'state');
+        modes = verification_layer(problem.opt_prob, data.z, data.state.x);
 
-    for f = {history_files.name}
-        % Get the correct step file.
-        file = [run_dir, f{1}];
-        history_info = h5info(file, '/');
-        
-        num_modes = (length({history_info.Datasets.Name})/3 - 2) / 3;
-        for i = 1 : num_modes
-            % Collect everything to be plotted.
-            dataset_info = h5info(file, ['/E', num2str(i), '_abs']);
-            dsize = dataset_info.Dataspace.Size;
-            dims = dsize(1:3);
-            num_iters = dsize(5);
-
-            % Plot (nearly) everything.
-            for iter = 1 : num_iters
-                for set = 1 : length(dataset_names)
-                    for comp = 1 : 3
-                        dataset_name = dataset_names{set}(i);
-                        data = h5read(file, dataset_name, ...
-                                        [1 1 1 comp iter], [dims 1 1]);
-                        data = data(:,:,round(dims(3)/2));
-                        image_name = ...
-                            image_names(f{1}, dataset_name(2:end), ...
-                                        comp, iter);
-                        my_saveimage(squeeze(data), map{set}, lims{set}, image_name);
-                    end
-                end
-            end
-        end
-
+        % Plot epsilon and field data.
+        my_vis_state(vis_dir, step_name, modes, clip);
     end
+
+%     %% Plot the history data.
+%     a=1
+%     dataset_names = {   @(mode_num) ['/E', num2str(mode_num), '_abs'], ...
+%                         @(mode_num) ['/E', num2str(mode_num), '_real'], ...
+%                         @(mode_num) ['/E', num2str(mode_num), '_imag'], ...
+%                         @(mode_num) ['/eps', num2str(mode_num), '_abs']};
+% 
+%     map = { colormap('hot'), ...
+%             colormap('jet'), ...
+%             colormap('jet'), ...
+%             flipud(colormap('bone'))};
+% 
+%     lims = {[], [], [], [2.25 12.25]};
+% 
+%     xyz = 'xyz';
+% 
+%     image_names = @(file, dset, comp, iter) ...
+%                         [vis_dir, dset, '_', xyz(comp), '_', ...
+%                         strrep(file, '_history.h5', ''),  ...
+%                         '_', sprintf('%03d', iter)];
+% 
+%     for f = {history_files.name}
+%         % Get the correct step file.
+%         file = [run_dir, f{1}];
+%         history_info = h5info(file, '/');
+%         
+%         num_modes = (length({history_info.Datasets.Name})/3 - 2) / 3;
+%         for i = 1 : num_modes
+%             % Collect everything to be plotted.
+%             dataset_info = h5info(file, ['/E', num2str(i), '_abs']);
+%             dsize = dataset_info.Dataspace.Size;
+%             dims = dsize(1:3);
+%             num_iters = dsize(5);
+% 
+%             % Plot (nearly) everything.
+%             for iter = 1 : num_iters
+%                 for set = 1 : length(dataset_names)
+%                     for comp = 1 : 3
+%                         dataset_name = dataset_names{set}(i);
+%                         data = h5read(file, dataset_name, ...
+%                                         [1 1 1 comp iter], [dims 1 1]);
+%                         data = data(:,:,round(dims(3)/2));
+%                         image_name = ...
+%                             image_names(f{1}, dataset_name(2:end), ...
+%                                         comp, iter);
+%                         my_saveimage(squeeze(data), map{set}, lims{set}, image_name);
+%                     end
+%                 end
+%             end
+%         end
+% 
+%     end
 
 end
 
@@ -197,7 +197,7 @@ function my_saveplot(plotfun, data, ylabeltext, filename, varargin)
     z = z';
 
     % Plot.
-    plotfun(1:size(z,1), z, 'b.-');
+    plotfun(1:size(z,1), z, 'b.-', 'linewidth', 6);
 
     % Change axis if needed.
     if ~isempty(varargin)
