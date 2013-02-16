@@ -14,7 +14,7 @@ function [mode, vis_layer] = model_L(omega, in, out, wg_types, options)
     % Basic dimensions.
     min_sim_len = 120;
     sim_length = max([min_sim_len, (wg_spacer * (M + 1) + 10+10)]);
-    dims = [min_sim_len sim_length 60];
+    dims = [min_sim_len sim_length 32];
 
     if options.flatten
         dims(2) = 1;

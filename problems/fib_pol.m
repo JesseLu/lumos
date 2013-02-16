@@ -10,7 +10,7 @@ function [problem] = fib_pol(custom_model_options)
     out{1} = io(2, 'te0', [0.4 1]);
 
     omega{2} = 2 * pi / 32.75;
-    in{2} = io(1, 3, 1); % Should be a circularly polarized mode.
+    in{2} = io(1, 'circ', 1); % Should be a circularly polarized mode.
     out{2} = io(3, 'te0', [0.4 1]);
 
     vis_options.mode_sel = 1 : N;
