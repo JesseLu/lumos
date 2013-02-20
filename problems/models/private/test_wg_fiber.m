@@ -22,7 +22,7 @@ function [E] = test_wg_fiber(type, mode_num, varargin)
         dims = [len len 40];
     end
 
-    omega = 2 * pi / 38.75;
+    omega = 2 * pi / 32.75;
     eps_lo = 2.25;
     eps_hi = 2.56;
     z_center = dims(3)/2;

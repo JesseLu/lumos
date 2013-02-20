@@ -13,7 +13,14 @@ function [callback] = start_simulation(omega, in, out, epsilon)
     end
 
     E0 = {zeros(dims), zeros(dims), zeros(dims)};
-    cb = solve_local(omega, s_prim, s_dual, mu, epsilon, J);
+    subplot 111;
+    if numel(dims) == 2
+        cb = solve_local(omega, s_prim, s_dual, mu, epsilon, J);
+    elseif dims(3) == 1
+        cb = solve_local(omega, s_prim, s_dual, mu, epsilon, J);
+    else
+        cb = solve_maxwell(omega, s_prim, s_dual, mu, epsilon, J);
+    end
 
     % Modify the callback.
     function [power] = my_callback()

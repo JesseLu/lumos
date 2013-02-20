@@ -1,6 +1,16 @@
-function [cb] = analyze_spl_wdm(state_file)
+function [lambda, power] = analyze_spl_wdm(state_file, num_w)
 
-    flatten = true;
+    fan_spread = (2*pi/32.75 - 2*pi/38.75) / 3; % Larger spread.
+    wlims = [2*pi/38.75-fan_spread, 2*pi/32.75+fan_spread];
+    w = wlims(1) : (wlims(2)-wlims(1))/(num_w-1) : wlims(2);
+    lambda = 2*pi./w * 40;
+
+    if strfind(state_file, '2D')
+        flatten = true;
+    else
+        flatten = false;
+    end
+
     if flatten
         mode_num = 2;
     else
@@ -44,8 +54,29 @@ function [cb] = analyze_spl_wdm(state_file)
         out{2}.pos{2}(3) = 1;
     end
 
-    % Run a bunch of simulations, and get the outputs for each one.
-    cb = start_simulation(2*pi/38.25, in, out, epsilon);
+    %% Run a bunch of simulations, and get the outputs for each one.
+    % Start the simulations.
+    N = length(w);
+    for i = 1 : N
+        fprintf('.');
+        cb{i} = start_simulation(w(i), in, out, epsilon);
+    end
+    fprintf('\n');
 
+    % Check for simulation completion.
+    done = false * ones(N, 1);
+    power = nan * ones(2, N);
+    while ~all(done)
+        for i = 1 : N
+            if ~done(i)
+                power(:,i) = cb{i}();
+                if all(~isnan(power(:,i)))
+                    cb{i} = []; % Try to free up some memory.
+                    done(i) = true;
+                    fprintf('%d finished [%d/%d]\n', i, sum(done), N);
+                end
+            end
+        end
+    end
+    plot(lambda, power, '.-');
 end
-
