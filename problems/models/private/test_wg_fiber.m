@@ -2,7 +2,7 @@
 % Not a bona fide test script as usual,
 % just helps to see which modes are really confined under certain conditions.
 
-function test_wg_fiber(type, mode_num, varargin)
+function [E] = test_wg_fiber(type, mode_num, varargin)
 
 %% Output parameters
 % Fills in everything for mode structures, except for the in and out fields.
@@ -22,7 +22,7 @@ function test_wg_fiber(type, mode_num, varargin)
         dims = [len len 40];
     end
 
-    omega = 2 * pi / 32.75;
+    omega = 2 * pi / 38.75;
     eps_lo = 2.25;
     eps_hi = 2.56;
     z_center = dims(3)/2;
@@ -67,8 +67,11 @@ function test_wg_fiber(type, mode_num, varargin)
     title_text = {'Ex', 'Ey', 'Ez'};
     for k = 1 : 3
         subplot(3, 1, k);
-        imagesc(abs(squeeze(E{k}(:,:,round(z_center))))'); 
+        data = abs(squeeze(E{k}(:,:,round(z_center))));
+        imagesc(data', max(abs(data(:))) * [-1 1]); 
         axis equal tight;
         colorbar;
         title(title_text{k});
     end
+
+    

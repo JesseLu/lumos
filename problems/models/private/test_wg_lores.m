@@ -52,8 +52,10 @@ function test_wg_lores(type, mode_num, varargin)
     title_text = {'Ex', 'Ey', 'Ez'};
     for k = 1 : 3
         subplot(3, 1, k);
-        imagesc(abs(squeeze(E{k}(15,:,:)))'); 
+        data = real(squeeze(E{k}(15,:,:)));
+        imagesc(data', max(abs(data(:))) * [-1 1]);
         axis equal tight;
+        set(gca, 'YDir', 'normal');
         colorbar;
         title(title_text{k});
     end
