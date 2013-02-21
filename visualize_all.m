@@ -9,6 +9,8 @@ function visualize_all()
 
     for i = 1 : length(names)
         fprintf('%s...\n', names{i});
-        visualize_design_run(names{i});
+        try
+            visualize_design_run(names{i});
+        end
     end
 end

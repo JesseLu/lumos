@@ -57,23 +57,29 @@ function [lambda, power] = analyze_spl_wdm(state_file, num_w)
     %% Run a bunch of simulations, and get the outputs for each one.
     % Start the simulations.
     N = length(w);
-    for i = 1 : N
-        fprintf('.');
-        cb{i} = start_simulation(w(i), in, out, epsilon);
-    end
-    fprintf('\n');
-
-    % Check for simulation completion.
+    chunksize = 13;
     done = false * ones(N, 1);
     power = nan * ones(2, N);
-    while ~all(done)
-        for i = 1 : N
-            if ~done(i)
-                power(:,i) = cb{i}();
-                if all(~isnan(power(:,i)))
-                    cb{i} = []; % Try to free up some memory.
-                    done(i) = true;
-                    fprintf('%d finished [%d/%d]\n', i, sum(done), N);
+    for cnt = 1 : ceil(N/chunksize)
+        starti = (cnt - 1) * chunksize + 1;
+        endi = min([cnt*chunksize, N]);
+
+        for i = starti : endi
+            fprintf('.');
+            cb{i} = start_simulation(w(i), in, out, epsilon);
+        end
+        fprintf('\n');
+
+        % Check for simulation completion.
+        while ~all(done(starti:endi))
+            for i = starti : endi 
+                if ~done(i)
+                    power(:,i) = cb{i}();
+                    if all(~isnan(power(:,i)))
+                        cb{i} = []; % Try to free up some memory.
+                        done(i) = true;
+                        fprintf('%d finished [%d/%d]\n', i, sum(done), N);
+                    end
                 end
             end
         end
