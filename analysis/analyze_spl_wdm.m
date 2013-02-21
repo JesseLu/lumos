@@ -1,11 +1,15 @@
-function [lambda, power] = analyze_spl_wdm(problem, num_w)
+function [lambda, power] = analyze_spl_wdm(epsilon, num_w)
 
     fan_spread = (2*pi/32.75 - 2*pi/38.75) / 3; % Larger spread.
     wlims = [2*pi/38.75-fan_spread, 2*pi/32.75+fan_spread];
     w = wlims(1) : (wlims(2)-wlims(1))/(num_w-1) : wlims(2);
     lambda = 2*pi./w * 40;
 
-    if strfind(state_file, '2D')
+    dims = size(epsilon{1});
+
+    if numel(dims) == 2
+        flatten = true;
+    elseif dims(3) == 1
         flatten = true;
     else
         flatten = false;
@@ -17,16 +21,15 @@ function [lambda, power] = analyze_spl_wdm(problem, num_w)
         mode_num = 1;
     end
 
-    %% Get epsilon
-    data = load(state_file, 'z', 'state');
-    problem = spl_wdm({ 'flatten', flatten, ...
-                        'S_type', 'average', ...
-                        'size', 'large'});
-    modes = verification_layer(problem.opt_prob, data.z, data.state.x);
+%     %% Get epsilon
+%     data = load(state_file, 'z', 'state');
+%     problem = spl_wdm({ 'flatten', flatten, ...
+%                         'S_type', 'average', ...
+%                         'size', 'large'});
+%     modes = verification_layer(problem.opt_prob, data.z, data.state.x);
+%     epsilon = modes(1).epsilon;
 
     %% Determine where the wgmode solves need to be
-    epsilon = modes(1).epsilon;
-    dims = size(epsilon{1});
     if numel(dims) == 2 
         dims = [dims 1];
     end
@@ -57,7 +60,7 @@ function [lambda, power] = analyze_spl_wdm(problem, num_w)
     %% Run a bunch of simulations, and get the outputs for each one.
     % Start the simulations.
     N = length(w);
-    chunksize = 13;
+    chunksize = 10;
     done = false * ones(N, 1);
     power = nan * ones(2, N);
     for cnt = 1 : ceil(N/chunksize)
