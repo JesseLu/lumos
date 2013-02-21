@@ -1,4 +1,4 @@
-function [lambda, power] = analyze_spl_wdm(state_file, num_w)
+function [lambda, power] = analyze_spl_wdm(problem, num_w)
 
     fan_spread = (2*pi/32.75 - 2*pi/38.75) / 3; % Larger spread.
     wlims = [2*pi/38.75-fan_spread, 2*pi/32.75+fan_spread];
