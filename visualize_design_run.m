@@ -71,8 +71,6 @@ function visualize_design_run(name)
         % Plot epsilon and field data.
         my_vis_state(vis_dir, step_name, modes, clip);
 
-        % Save epsilon data.
-        
     end
 
 %     %% Plot the history data.
@@ -142,7 +140,6 @@ function my_vis_state(dir, step_name, modes, clip)
 
     xyz = 'xyz';
 
-    image_names = @(dset, comp) [vis_dir, dset, '_', xyz(comp), '_', step_name];
     for i = 1 : length(modes) 
         mode = modes(i);
         for j = 1 : length(shots)
@@ -164,6 +161,13 @@ function my_vis_state(dir, step_name, modes, clip)
             my_saveimage(squeeze(data), s.map, s.lims, image_name, clip);
         end
     end
+
+    % Do a 3D shot of epsilon_z.
+    eps_z = modes(1).epsilon{3};
+%     vis_3D_epsilon(eps_z, 7.25, 0, 1);
+%     print('-dpng', '-r60', [dir, '3d_eps']);
+    save([dir, 'epsz.mat'], 'eps_z');
+
 end
 
 function my_saveimage(z, map, lims, filename, varargin)
@@ -236,6 +240,7 @@ function [dims] = vis_3D_epsilon(A, mat_index, skim, alpha)
     set(hpatch,'FaceAlpha', alpha, 'FaceColor',120*[1 1 1]./255,'EdgeColor','none')
 
     my_make_pretty(dims);
+end
 
 function my_make_pretty (dims)
     grid on
@@ -245,11 +250,12 @@ function my_make_pretty (dims)
     % make it more visually intuitive
     axis tight
     axis ([0 dims(2) 0 dims(1) 0 dims(3)]);
-    H = gcf; % get the current figure handle
+    % H = gcf; % get the current figure handle
     % set (H, 'WindowStyle', 'normal', 'OuterPosition', [100 100 640 480] + [0 0 10 29], 'MenuBar', 'none', 'ToolBar', 'none'); % set the location and size of the window
-    set (H, 'WindowStyle', 'docked');
+    % set (H, 'WindowStyle', 'docked');
     view(0, 45);
     grid off;
+end
 
 
 
