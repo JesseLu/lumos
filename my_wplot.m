@@ -1,4 +1,4 @@
-function my_wplot(o1, o2)
+function my_wplot(l, p)
 
     for i = 1 : length(o1)
         p1(i,1) = mean(o1{i}(1:21));
