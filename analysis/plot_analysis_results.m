@@ -6,6 +6,7 @@ function plot_analysis_results()
     orig = load([analysis_dir, 'narrowband.mat']);
     top = load([analysis_dir, 'broadband.mat']);
     temp = load([analysis_dir, 'temp_shift.mat']);
+    fab = load([analysis_dir, 'fab_shift.mat']);
     l = orig.l; % Should be the same for all data.
 
     my_save = @(filename) save_plot([analysis_dir, filesep, 'plots', ...
@@ -31,6 +32,25 @@ function plot_analysis_results()
         cnt = cnt + 1;
     end
     my_save('temp_shift'); 
+
+
+    % Lastly, fab shift.
+    hold off
+    cnt = 0;
+    for i = 7 : 2 : 15
+        c = i - 11;
+        if c == 0
+            color = [0 0 0];
+        elseif c < 0
+            color = [0 0.3-c/8 0];
+        else
+            color = [0 0 0.3+c/8];
+        end
+        % color = color + [0.6 0 0];
+        plot(l, fab.p{i}, '-', 'Linewidth', 2, 'Color', color);
+        hold on
+    end
+    my_save('fab_shift'); 
 
 
 end
