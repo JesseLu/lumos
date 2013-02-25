@@ -1,0 +1,17 @@
+#! /bin/bash
+
+echo Looking in directory [$1]...
+echo Orientations set to [$2]...
+
+iters=`(cd $1 && ls eps1_abs_z_*) | sed -e 's/eps1_abs_z_//'`
+
+comps=`echo $2 | sed -e 's/\(.\)/\1\n/g'`
+
+for f in $iters; do
+    inputs="$1/eps1_abs_z_$f "
+    for c in $comps; do
+        inputs+="$1/E[0-9]_abs_$c\_$f "
+    done
+    echo $f
+    convert +append $inputs $1/comb_$1_$f
+done
