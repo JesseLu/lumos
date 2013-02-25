@@ -32,6 +32,7 @@ function plot_analysis_results()
         cnt = cnt + 1;
     end
     my_save('temp_shift'); 
+    pause
 
 
     % Lastly, fab shift.
