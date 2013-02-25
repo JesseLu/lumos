@@ -9,8 +9,10 @@ comps=`echo $2 | sed -e 's/\(.\)/\1\n/g'`
 
 for f in $iters; do
     inputs="$1/eps1_abs_z_$f "
+    i=1
     for c in $comps; do
-        inputs+="$1/E[0-9]_abs_$c\_$f "
+        inputs+="$1/E$i""_abs_$c""_$f "
+        i=`expr $i + 1`
     done
     echo $f
     convert +append $inputs $1/comb_$1_$f

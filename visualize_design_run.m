@@ -73,58 +73,57 @@ function visualize_design_run(name)
 
     end
 
-%     %% Plot the history data.
-%     a=1
-%     dataset_names = {   @(mode_num) ['/E', num2str(mode_num), '_abs'], ...
-%                         @(mode_num) ['/E', num2str(mode_num), '_real'], ...
-%                         @(mode_num) ['/E', num2str(mode_num), '_imag'], ...
-%                         @(mode_num) ['/eps', num2str(mode_num), '_abs']};
-% 
-%     map = { colormap('hot'), ...
-%             colormap('jet'), ...
-%             colormap('jet'), ...
-%             flipud(colormap('bone'))};
-% 
-%     lims = {[], [], [], [2.25 12.25]};
-% 
-%     xyz = 'xyz';
-% 
-%     image_names = @(file, dset, comp, iter) ...
-%                         [vis_dir, dset, '_', xyz(comp), '_', ...
-%                         strrep(file, '_history.h5', ''),  ...
-%                         '_', sprintf('%03d', iter)];
-% 
-%     for f = {history_files.name}
-%         % Get the correct step file.
-%         file = [run_dir, f{1}];
-%         history_info = h5info(file, '/');
-%         
-%         num_modes = (length({history_info.Datasets.Name})/3 - 2) / 3;
-%         for i = 1 : num_modes
-%             % Collect everything to be plotted.
-%             dataset_info = h5info(file, ['/E', num2str(i), '_abs']);
-%             dsize = dataset_info.Dataspace.Size;
-%             dims = dsize(1:3);
-%             num_iters = dsize(5);
-% 
-%             % Plot (nearly) everything.
-%             for iter = 1 : num_iters
-%                 for set = 1 : length(dataset_names)
-%                     for comp = 1 : 3
-%                         dataset_name = dataset_names{set}(i);
-%                         data = h5read(file, dataset_name, ...
-%                                         [1 1 1 comp iter], [dims 1 1]);
-%                         data = data(:,:,round(dims(3)/2));
-%                         image_name = ...
-%                             image_names(f{1}, dataset_name(2:end), ...
-%                                         comp, iter);
-%                         my_saveimage(squeeze(data), map{set}, lims{set}, image_name);
-%                     end
-%                 end
-%             end
-%         end
-% 
-%     end
+    %% Plot the history data.
+    dataset_names = {   @(mode_num) ['/E', num2str(mode_num), '_abs'], ...
+                        @(mode_num) ['/E', num2str(mode_num), '_real'], ...
+                        @(mode_num) ['/E', num2str(mode_num), '_imag'], ...
+                        @(mode_num) ['/eps', num2str(mode_num), '_abs']};
+
+    map = { colormap('hot'), ...
+            colormap('jet'), ...
+            colormap('jet'), ...
+            flipud(colormap('bone'))};
+
+    lims = {[], [], [], [2.25 12.25]};
+
+    xyz = 'xyz';
+
+    image_names = @(file, dset, comp, iter) ...
+                        [vis_dir, dset, '_', xyz(comp), '_', ...
+                        strrep(file, '_history.h5', ''),  ...
+                        '_', sprintf('%03d', iter)];
+
+    for f = {history_files.name}
+        % Get the correct step file.
+        file = [run_dir, f{1}];
+        history_info = h5info(file, '/');
+        
+        num_modes = (length({history_info.Datasets.Name})/3 - 2) / 3;
+        for i = 1 : num_modes
+            % Collect everything to be plotted.
+            dataset_info = h5info(file, ['/E', num2str(i), '_abs']);
+            dsize = dataset_info.Dataspace.Size;
+            dims = dsize(1:3);
+            num_iters = dsize(5);
+
+            % Plot (nearly) everything.
+            for iter = 1 : num_iters
+                for set = 1 : length(dataset_names)
+                    for comp = 1 : 3
+                        dataset_name = dataset_names{set}(i);
+                        data = h5read(file, dataset_name, ...
+                                        [1 1 1 comp iter], [dims 1 1]);
+                        data = data(:,:,round(dims(3)/2));
+                        image_name = ...
+                            image_names(f{1}, dataset_name(2:end), ...
+                                        comp, iter);
+                        my_saveimage(squeeze(data), map{set}, lims{set}, image_name);
+                    end
+                end
+            end
+        end
+
+    end
 end
 
 function my_vis_state(dir, step_name, modes, clip)

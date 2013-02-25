@@ -1,3 +1,15 @@
 #! /bin/bash
 
+./append_pics wgc_te_r1 y
+./append_pics wgc_tm_r1 z
+./append_pics spl_modal_r1 yy
+./append_pics spl_tetm_r1 yz
+./append_pics spl_wdm_r1 yy
+./append_pics hub_3x3_r1 yyy
+./append_pics hub_4x4_r1 yyyy
+./append_pics hub_2x2x2_r1 yyyy
+./append_pics fib_te_r1 y
+./append_pics fib_pol_r1 yy
+./append_pics fib_wdm_r1 yy
+
 
