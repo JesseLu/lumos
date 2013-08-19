@@ -152,7 +152,11 @@ function my_vis_state(dir, step_name, modes, clip)
                 case 'y'
                     data = data(:,ind(2),:);
                 case 'z'
-                    data = data(:,:,ind(3));
+                    if numel(ind) == 3
+                        data = data(:,:,ind(3));
+                    else
+                        data = data;
+                    end
             end
 
             image_name = [dir, s.data, num2str(i), xyz(s.comp), ...

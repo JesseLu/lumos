@@ -9,7 +9,7 @@ function [mode, vis_layer] = model_T(omega, in, out, wg_types, options)
 % At the same time, make the in and out fields easier to specify.
 
     % Basic dimensions.
-    dims = [80 60 40];
+    dims = [160 60 40];
 
     wg_dirs = {'+', '-'};
     wg_ypos = {dims(2)/2, dims(2)/2};

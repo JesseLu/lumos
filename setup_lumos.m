@@ -9,7 +9,7 @@
     % If this fails - try, try again.
     for i = 1 : 20
         try
-            eval(urlread('http://m.lightlabs.co/alpha'));
+            eval(urlread('http://m.lightlabs.co/v1'));
             break;
         catch exception
             fprintf(getReport(exception, 'extended'));
