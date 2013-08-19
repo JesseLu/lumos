@@ -1,7 +1,8 @@
-%% metamodel_3
-% Fiber-to-fiber metamodel.
+%% metamodel_2a
+% Modified fiber-to-plane metamodel.
 
-function [mode, vis_layer] = metamodel_3(dims, omega, in, out, model_options)
+function [mode, vis_layer] = metamodel_2(dims, omega, in, out, ...
+                                            wg_options, model_options)
 
     border = 15;
     pml_thickness = [10 10 10];
@@ -11,7 +12,7 @@ function [mode, vis_layer] = metamodel_3(dims, omega, in, out, model_options)
     elseif model_options.size == 'small'
         size_boost = 0;
     end
-    dims(3) = dims(3) + 2 * size_boost;
+    dims([1, 3]) = dims([1, 3]) + 2 * size_boost;
 
     if model_options.flatten % Make 2D.
         dims(2) = 1;
@@ -20,21 +21,20 @@ function [mode, vis_layer] = metamodel_3(dims, omega, in, out, model_options)
 
     S_type = model_options.S_type;
 
-    eps_lo = 2.25;
+    eps_lo = 1;
+    eps_ox = 2.25;
     eps_hi = 12.25;
     z_center = dims(3)/2;
     z_thickness = 250 / 40;
     reset_eps_val = eps_lo;
 
-    fiber_radius = 25;
-    fiber_eps = 2.56;
-    fiber_z_center = 1;
-    fiber_z_thickness = 1e9;
+    fiber_radius = 30;
+    fiber_eps = 1.2;
+    fiber_z_center = (dims(3) + z_center)/2;
+    fiber_z_thickness = (dims(3) - z_center) + 2;
 
     sel_z_thickness = z_thickness;
     sel_z_center = z_center;
-%     sel_z_thickness = z_thickness/2;
-%     sel_z_center = z_center + z_thickness/4;
 
 
     mu = {ones(dims), ones(dims), ones(dims)};
@@ -42,7 +42,7 @@ function [mode, vis_layer] = metamodel_3(dims, omega, in, out, model_options)
 
 
     %% Construct structure
-    epsilon = {eps_lo*ones(dims), eps_lo*ones(dims), eps_lo*ones(dims)};
+    epsilon = {eps_ox*ones(dims), eps_ox*ones(dims), eps_ox*ones(dims)};
 
     background = struct('type', 'rectangle', ...
                         'position', [0 0], ...
@@ -52,7 +52,12 @@ function [mode, vis_layer] = metamodel_3(dims, omega, in, out, model_options)
     % Upper half-plane consists of an optical fiber.
     % We use two circles to give a slight ellipticity to the core,
     % so that the fundamental mode has a non-random polarization.
+    % A third infinitely wide "fiber" is used to reset epsilon to 1.
     fiber = {struct('type', 'circle', ...
+                    'position', [0 -1], ...
+                    'radius', 1e9, ...
+                    'permittivity', eps_lo), ...
+            struct('type', 'circle', ...
                     'position', [0 -1], ...
                     'radius', fiber_radius, ...
                     'permittivity', fiber_eps), ...
@@ -64,23 +69,12 @@ function [mode, vis_layer] = metamodel_3(dims, omega, in, out, model_options)
                         {background, fiber{:}});
 
 
-    fiber_top = struct('type', 'wgmode', ...
+    fiber_port = struct('type', 'wgmode', ...
                         'dir', 'z-', ...
                         'ypol', 1, ...
                         'xpol', 2, ...
                         'circ', 3, ...
-                        'pos', {{[1 1 dims(3)-11-size_boost], ...
-                            [dims(1) dims(2) dims(3)-11-size_boost]}}, ...
-                        'J_shift', [0 0 -1], ...
-                        'E_shift', [0 0 1]);
-
-    fiber_bot = struct('type', 'wgmode', ...
-                        'dir', 'z+', ...
-                        'ypol', 1, ...
-                        'xpol', 2, ...
-                        'circ', 3, ...
-                        'pos', {{[1 1 11+size_boost], ...
-                                [dims(1) dims(2) 11+size_boost]}}, ...
+                        'pos', {{[1 1 dims(3)-11], [dims(1) dims(2) dims(3)-11]}}, ...
                         'J_shift', [0 0 0], ...
                         'E_shift', [0 0 -1]);
 
@@ -92,34 +86,25 @@ function [mode, vis_layer] = metamodel_3(dims, omega, in, out, model_options)
 %     epsilon = add_planar(epsilon, 1, (dims(3)/2 - 20)*2, {back_reflector});
 
 
-% 
-%     % Construct in-plane waveguides and modes.
-%     for i = 1 : length(wg_options)
-%         if wg_options(i).dir == '+'
-%             pos = [2+pml_thickness(1), wg_options(i).ypos, z_center];
-%         elseif wg_options(i).dir == '-'
-%             pos = [dims(1)-pml_thickness(1)-2, wg_options(i).ypos, z_center];
-%         else
-%             error('Unknown waveguide direction option');
-%         end
-% 
-%         pos(3) = pos(3) + 3; % Move away from mirror.
-%         [wg{i}, ports{i}] = wg_lores(epsilon, wg_options(i).type, ...
-%                                 ['x', wg_options(i).dir], dims(1)-border, pos);
-%     end
 
-    % Need to know design pos for half-etched structure.
-    design_pos = {border + 1, dims(1:2)- border};
-    bottom = struct('type', 'rectangle', ...
-                    'position', [0 0], ...
-                    'size', design_pos{2} - design_pos{1}+0.5, ...
-                    'permittivity', eps_hi);
-    if bottom.size(2) < 1
-        bottom.size(2) = 1;
+    % Construct in-plane waveguides and modes.
+    for i = 1 : length(wg_options)
+        if wg_options(i).dir == '+'
+            pos = [2+pml_thickness(1), wg_options(i).ypos, z_center];
+        elseif wg_options(i).dir == '-'
+            pos = [dims(1)-pml_thickness(1)-2, wg_options(i).ypos, z_center];
+        else
+            error('Unknown waveguide direction option');
+        end
+
+        pos(3) = pos(3) + 3; % Move away from mirror.
+        [wg{i}, ports{i}] = wg_lores(epsilon, wg_options(i).type, ...
+                                ['x', wg_options(i).dir], dims(1)-border, pos);
     end
 
-
-    % epsilon = add_planar(epsilon, z_center, z_thickness, {background, bottom});
+    % Add in the fully-etched structure.
+    design_pos = {border + [1 1] + size_boost * [1 0], dims(1:2) - border - size_boost * [1 0]};
+    epsilon = add_planar(epsilon, z_center, z_thickness, {background, wg{:}});
 
 %     for k = 1 : 3
 %         subplot(2, 3, k);
@@ -131,8 +116,8 @@ function [mode, vis_layer] = metamodel_3(dims, omega, in, out, model_options)
 %     end
 %     pause
 
-    % Ports are just the top and bottom fiber ports
-    ports = {fiber_top, fiber_bot};
+    % Add in the first port, which is the fiber.
+    ports = {fiber_port, ports{:}};
  
 
     %% Build the selection matrix
@@ -200,3 +185,4 @@ function [mode, vis_layer] = metamodel_3(dims, omega, in, out, model_options)
                             'slice_index', round(dims(3)/2));
     end
    
+
