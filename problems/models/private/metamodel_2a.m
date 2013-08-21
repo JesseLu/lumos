@@ -25,7 +25,7 @@ function [mode, vis_layer] = metamodel_2(dims, omega, in, out, ...
     eps_ox = 2.25;
     eps_hi = 12.25;
     z_center = dims(3)/2;
-    z_thickness = 250 / 40;
+    z_thickness = 220 / 40;
     reset_eps_val = eps_lo;
 
     fiber_radius = 30;
