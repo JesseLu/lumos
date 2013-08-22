@@ -3,7 +3,7 @@ function [d_tot] = dist_to_border(phi)
     dims = size(phi);
     
     %% Get the contour.
-    c = contourc(phi, [0 0]);
+    c = my_contourc(phi);
 
     % Delete the level-pairs headers (see contourc documentation).
     ind = find(c(1,:) == 0);

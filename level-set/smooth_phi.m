@@ -33,8 +33,8 @@ function [on_border] = my_border_detect(phi)
 
     dims = size(phi);
     
-    %% Get the contour.
-    c = contourc(phi, [0 0]);
+    % Get the contour.
+    c = my_contourc(phi);
 
     % Delete the level-pairs headers (see contourc documentation).
     ind = find(c(1,:) == 0);
